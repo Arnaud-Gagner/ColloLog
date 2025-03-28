@@ -1,3 +1,4 @@
+# ---- C++ -----
 # Prerequisites
 *.d
 
@@ -30,3 +31,9 @@
 *.exe
 *.out
 *.app
+
+# ---- CMake ----
+build/*
+
+# ---- Logs -----
+*.log
