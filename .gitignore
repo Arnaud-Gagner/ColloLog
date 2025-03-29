@@ -37,3 +37,6 @@ build/*
 
 # ---- Logs -----
 *.log
+
+# ---- VS Code ----
+.vscode/
