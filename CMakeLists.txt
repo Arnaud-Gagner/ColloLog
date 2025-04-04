@@ -10,6 +10,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 set(SOURCES
     src/main.cpp
     src/NaiveLogger.cpp
+    src/LocalLogger.cpp
     src/ColloEnums.cpp
 )
 
