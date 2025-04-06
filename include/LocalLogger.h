@@ -19,10 +19,10 @@ public:
 
 private:
     void swapBuffers();
-    void writeLogs();
+    void write();
 
 private:
-    static const size_t BufferSize = 600;
+    static const size_t BufferSize = 1024;
 
 private:
     std::string mFilePath;
@@ -33,8 +33,8 @@ private:
     static thread_local char* mCurrentBuffer;
     static thread_local char* mNextBuffer;
 
-    static thread_local int mCurrentIndex;
-    static thread_local int mNextIndex;
+    static thread_local unsigned int mCurrentIndex;
+    static thread_local unsigned int mNextIndex;
 
     std::mutex mLock;
 };

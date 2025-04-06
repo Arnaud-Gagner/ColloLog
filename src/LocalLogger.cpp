@@ -12,8 +12,8 @@ thread_local char LocalLogger::mBuffer2[LocalLogger::BufferSize];
 thread_local char* LocalLogger::mCurrentBuffer = LocalLogger::mBuffer1;
 thread_local char* LocalLogger::mNextBuffer = LocalLogger::mBuffer2;
 
-thread_local int LocalLogger::mCurrentIndex = 0;
-thread_local int LocalLogger::mNextIndex = 0;
+thread_local unsigned int LocalLogger::mCurrentIndex = 0;
+thread_local unsigned int LocalLogger::mNextIndex = 0;
 
 LocalLogger::LocalLogger(const std::string& filepath)
     : mFilePath{ filepath }
@@ -24,7 +24,7 @@ LocalLogger::LocalLogger(const std::string& filepath)
 
 LocalLogger::~LocalLogger()
 {
-    writeLogs();
+    write();
     if (mFile.is_open()) {
         mFile.close();
     }
@@ -42,7 +42,7 @@ void LocalLogger::addLog(const LogLevel& lvl, const std::string& msg)
     if (BufferSize < mCurrentIndex + messageSize) {
         std::memcpy(mNextBuffer + mNextIndex, message.c_str(), messageSize);
         mNextIndex += messageSize;
-        writeLogs();
+        write();
     }
     else {
         std::memcpy(mCurrentBuffer + mCurrentIndex, message.c_str(), messageSize);
@@ -57,9 +57,8 @@ void LocalLogger::swapBuffers()
     mNextIndex = 0;
 }
 
-void LocalLogger::writeLogs()
+void LocalLogger::write()
 {
-    // TODO: add lock-free protection
     mLock.lock();
 
     mFile.open(mFilePath, std::fstream::app);
