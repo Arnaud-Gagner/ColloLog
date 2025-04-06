@@ -19,7 +19,7 @@ private:
     void writeLogs();
 
 private:
-    static const size_t BufferSize = 600;
+    static const size_t BufferSize = 1024;
 
 private:
     std::string mFilePath;

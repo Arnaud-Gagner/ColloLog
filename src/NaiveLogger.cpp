@@ -46,7 +46,7 @@ void NaiveLogger::writeLogs()
     mLock.lock();
 
     mFile.open(mFilePath, std::fstream::app);
-    mFile.write((char*)&mBuffer, mCurrentIndex);
+    mFile.write(mBuffer, mCurrentIndex);
     mFile.close();
     mCurrentIndex = 0;
 
