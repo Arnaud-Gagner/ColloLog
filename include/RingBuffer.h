@@ -17,7 +17,7 @@ public:
     bool isFull() const;
 
     void append(const std::string& message);
-    std::string flush(std::ofstream& file, const std::string& filePath);
+    void flush(std::ofstream& file, const std::string& filePath);
 
 private:
     std::vector<std::string> mBuffer;

@@ -16,10 +16,10 @@ public:
     void addLog(const LogLevel& lvl, const std::string& msg);
 
 private:
-    void writeLogs();
+    static const size_t BufferSize = 1024;
 
 private:
-    static const size_t BufferSize = 1024;
+    void write();
 
 private:
     std::string mFilePath;

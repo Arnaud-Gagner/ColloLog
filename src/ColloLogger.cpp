@@ -10,8 +10,6 @@ ColloLogger::ColloLogger(const std::string& filePath)
     memset(mBuffer2, 0, BufferSize);
     mCurrentBuffer = mBuffer1;
     mNextBuffer = mBuffer2;
-    
-    mFile.open(mFilePath, std::fstream::app);
 }
 
 ColloLogger::~ColloLogger()
@@ -52,8 +50,10 @@ void ColloLogger::swapBuffers()
 
 void ColloLogger::write()
 {
-    std::future<void> save = std::async(std::launch::async, [this]() {
+    std::async(std::launch::async, [this]() {
+        mFile.open(mFilePath, std::ios::app);
         mFile.write(mCurrentBuffer, mCurrentIndex);
+        mFile.close();
         swapBuffers();
     });
 }

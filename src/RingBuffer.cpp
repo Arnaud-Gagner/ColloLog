@@ -1,10 +1,12 @@
 #include "RingBuffer.h"
 
+#include <sstream>
+
 RingBuffer::RingBuffer(size_t size)
     : mMaxSize{ size }, mHead{}, mTail{},
     mIsFull{}
 {
-    mBuffer = std::vector<std::string>(mMaxSize);
+    mBuffer.resize(mMaxSize);
 }
 
 bool RingBuffer::isFull() const
@@ -14,27 +16,27 @@ bool RingBuffer::isFull() const
 
 void RingBuffer::append(const std::string& message)
 {
-    mTail = (mIsFull) * ((mTail + 1) % mMaxSize)
-        + (!mIsFull) * (mTail);
+    mTail = (mTail + mIsFull) % mMaxSize;
 
     mBuffer[mHead] = message;
     mHead = (mHead + 1) % mMaxSize;
     mIsFull = mHead == mTail;
 }
 
-std::string RingBuffer::flush(std::ofstream& file, const std::string& filePath)
+void RingBuffer::flush(std::ofstream& file, const std::string& filePath)
 {
-    std::string output = "";
+    std::stringstream output;
     size_t index = mTail;
 
-    file.open(filePath, std::fstream::app);
     for (int i{}; i < mMaxSize; i++) {
-        file.write(mBuffer[index].c_str(), mBuffer[index].size());
+        output << mBuffer[index];
         index = (index + 1) % mMaxSize;
     }
+    
+    file.open(filePath, std::ios::app);
+    file.write(output.str().c_str(), output.str().size());
     file.close();
 
     mHead = mTail;
     mIsFull = false;
-    return output;
 }
