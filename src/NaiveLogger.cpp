@@ -14,7 +14,7 @@ NaiveLogger::NaiveLogger(const std::string& filepath)
 
 NaiveLogger::~NaiveLogger()
 {
-    writeLogs();
+    write();
     if (mFile.is_open()) {
         mFile.close();
     }
@@ -26,10 +26,10 @@ void NaiveLogger::addLog(const LogLevel& lvl, const std::string& msg)
     std::string message{
         '[' + std::to_string(dateTime.time_since_epoch().count()) + ']' + levelToString(lvl) + " " + msg + '\n'
     };
-
+    
     size_t messageSize = message.size();
     if (BufferSize < mCurrentIndex + messageSize) {
-        writeLogs();
+        write();
     }
     if (BufferSize < mCurrentIndex) {
         assert(("Log message exceeds buffer size"));
@@ -41,7 +41,7 @@ void NaiveLogger::addLog(const LogLevel& lvl, const std::string& msg)
     mLock.unlock();
 }
 
-void NaiveLogger::writeLogs()
+void NaiveLogger::write()
 {
     mLock.lock();
 
