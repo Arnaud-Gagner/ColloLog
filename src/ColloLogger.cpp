@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <future>
+#include <cstring>
 
 #include <iostream>
 
@@ -34,21 +35,26 @@ void ColloLogger::addLog(const LogLevel& lvl, const std::string& msg)
     message += msg;
     message += '\n';
     size_t messageSize = message.size();
+    const char* cstr = message.c_str();
 
     if (BufferSize <= mAppendIndex + messageSize) {
         mLock.lock();
         swapBuffers();
-        std::memcpy(mAppendBuffer + mAppendIndex, message.c_str(), messageSize);
+        for (int i = 0; i < messageSize; i++) {
+            mAppendBuffer[mAppendIndex+i] = message[i];
+        }
         mAppendIndex += messageSize;
         mLock.unlock(); 
         write();
     }
     else {
         mLock.lock();
-        std::memcpy(mAppendBuffer + mAppendIndex, message.c_str(), messageSize);
+        for (int i = 0; i < messageSize; i++) {
+            mAppendBuffer[mAppendIndex+i] = message[i];
+        }
         mAppendIndex += messageSize;
         mLock.unlock();
-    }   
+    }
 }
 
 void ColloLogger::swapBuffers()

@@ -30,17 +30,23 @@ LocalLogger::~LocalLogger()
 void LocalLogger::addLog(const LogLevel& lvl, const std::string& msg)
 {
     auto time = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-    std::string message{
-        '[' + std::to_string(time.time_since_epoch().count()) + ']' + levelToString(lvl) + " " + msg + '\n'
-    };
-
+    std::string message = "[";
+    message += std::to_string(time.time_since_epoch().count());
+    message += ']';
+    message += levelToString(lvl);
+    message += ' ';
+    message += msg;
+    message += '\n';
     size_t messageSize = message.size();
+    const char* cstr = message.c_str();
 
     if (BufferSize < mAppendIndex + messageSize) {
         swapBuffers();
         write();
     }
-    std::memcpy(mAppendBuffer + mAppendIndex, message.c_str(), messageSize);
+    for (int i = 0; i < messageSize; i++) {
+        mAppendBuffer[mAppendIndex+i] = message[i];
+    }
     mAppendIndex += messageSize;
 }
 
