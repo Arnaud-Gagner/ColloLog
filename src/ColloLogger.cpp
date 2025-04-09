@@ -3,17 +3,20 @@
 #include <chrono>
 #include <future>
 
+#include <iostream>
+
 ColloLogger::ColloLogger(const std::string& filePath)
-    : mFilePath{ filePath}, mCurrentIndex{}, mNextIndex{}
+    : mFilePath{ filePath}, mAppendIndex{}, mWriteIndex{}
 {
     memset(mBuffer1, 0, BufferSize);
     memset(mBuffer2, 0, BufferSize);
-    mCurrentBuffer = mBuffer1;
-    mNextBuffer = mBuffer2;
+    mAppendBuffer = mBuffer1;
+    mWriteBuffer = mBuffer2;
 }
 
 ColloLogger::~ColloLogger()
 {
+    swapBuffers();
     write();
     if (mFile.is_open()) {
         mFile.close();
@@ -23,37 +26,46 @@ ColloLogger::~ColloLogger()
 void ColloLogger::addLog(const LogLevel& lvl, const std::string& msg)
 {
     auto time = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-    std::string message{
-        '[' + std::to_string(time.time_since_epoch().count()) + ']' + levelToString(lvl) + " " + msg + '\n'
-    };
+    std::string message = "[";
+    message += std::to_string(time.time_since_epoch().count());
+    message += ']';
+    message += levelToString(lvl);
+    message += ' ';
+    message += msg;
+    message += '\n';
     size_t messageSize = message.size();
-    
-    mLock.lock();
-    if (BufferSize < mCurrentIndex + messageSize) {
-        std::memcpy(mNextBuffer + mNextIndex, message.c_str(), messageSize);
-        mNextIndex += messageSize;
+
+    if (BufferSize <= mAppendIndex + messageSize) {
+        mLock.lock();
+        swapBuffers();
+        std::memcpy(mAppendBuffer + mAppendIndex, message.c_str(), messageSize);
+        mAppendIndex += messageSize;
+        mLock.unlock(); 
         write();
     }
     else {
-        std::memcpy(mCurrentBuffer + mCurrentIndex, message.c_str(), messageSize);
-        mCurrentIndex += messageSize;
-    }
-    mLock.unlock();
+        mLock.lock();
+        std::memcpy(mAppendBuffer + mAppendIndex, message.c_str(), messageSize);
+        mAppendIndex += messageSize;
+        mLock.unlock();
+    }   
 }
 
 void ColloLogger::swapBuffers()
 {
-    std::swap(mCurrentBuffer, mNextBuffer);
-    mCurrentIndex = mNextIndex;
-    mNextIndex = 0;
+    std::swap(mWriteBuffer, mAppendBuffer);
+    mWriteIndex = mAppendIndex;
+    mAppendIndex = 0;
 }
+
 
 void ColloLogger::write()
 {
     std::async(std::launch::async, [this]() {
+        mFileLock.lock();
         mFile.open(mFilePath, std::ios::app);
-        mFile.write(mCurrentBuffer, mCurrentIndex);
+        mFile.write(mWriteBuffer, mWriteIndex);
         mFile.close();
-        swapBuffers();
+        mFileLock.unlock();
     });
 }

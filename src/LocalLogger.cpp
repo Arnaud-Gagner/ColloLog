@@ -1,25 +1,22 @@
 #include "LocalLogger.h"
 
-#include <cassert>
 #include <chrono>
-#include <direct.h>
-#include <iostream>
-#include <string>
+#include <future>
 
 thread_local char LocalLogger::mBuffer1[LocalLogger::BufferSize];
 thread_local char LocalLogger::mBuffer2[LocalLogger::BufferSize];
 
-thread_local char* LocalLogger::mCurrentBuffer = LocalLogger::mBuffer1;
-thread_local char* LocalLogger::mNextBuffer = LocalLogger::mBuffer2;
+thread_local char* LocalLogger::mAppendBuffer = LocalLogger::mBuffer1;
+thread_local char* LocalLogger::mWriteBuffer = LocalLogger::mBuffer2;
 
-thread_local unsigned int LocalLogger::mCurrentIndex = 0;
-thread_local unsigned int LocalLogger::mNextIndex = 0;
+thread_local unsigned int LocalLogger::mAppendIndex = 0;
+thread_local unsigned int LocalLogger::mWriteIndex = 0;
 
 LocalLogger::LocalLogger(const std::string& filepath)
     : mFilePath{ filepath }
 {
-    mCurrentBuffer = mBuffer1;
-    mNextBuffer = mBuffer2;
+    mAppendBuffer = mBuffer1;
+    mWriteBuffer = mBuffer2;
 }
 
 LocalLogger::~LocalLogger()
@@ -39,34 +36,26 @@ void LocalLogger::addLog(const LogLevel& lvl, const std::string& msg)
 
     size_t messageSize = message.size();
 
-    if (BufferSize < mCurrentIndex + messageSize) {
-        std::memcpy(mNextBuffer + mNextIndex, message.c_str(), messageSize);
-        mNextIndex += messageSize;
+    if (BufferSize < mAppendIndex + messageSize) {
+        swapBuffers();
         write();
     }
-    else {
-        std::memcpy(mCurrentBuffer + mCurrentIndex, message.c_str(), messageSize);
-        mCurrentIndex += messageSize;
-    }
+    std::memcpy(mAppendBuffer + mAppendIndex, message.c_str(), messageSize);
+    mAppendIndex += messageSize;
 }
 
 void LocalLogger::swapBuffers()
 {
-    std::swap(mCurrentBuffer, mNextBuffer);
-    mCurrentIndex = mNextIndex;
-    mNextIndex = 0;
+    std::swap(mAppendBuffer, mWriteBuffer);
+    mWriteIndex = mAppendIndex;
+    mAppendIndex = 0;
 }
 
 void LocalLogger::write()
 {
     mLock.lock();
-
     mFile.open(mFilePath, std::fstream::app);
-    mFile.write(mCurrentBuffer, mCurrentIndex);
+    mFile.write(mWriteBuffer, mWriteIndex);
     mFile.close();
-    mCurrentIndex = 0;
-
     mLock.unlock();
-
-    swapBuffers();
 }

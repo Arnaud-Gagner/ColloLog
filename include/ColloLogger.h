@@ -29,13 +29,14 @@ private:
 
     char mBuffer1[BufferSize];
     char mBuffer2[BufferSize];
-    char* mCurrentBuffer;
-    char* mNextBuffer;
+    char* mAppendBuffer;
+    char* mWriteBuffer;
 
-    unsigned int mCurrentIndex;
-    unsigned int mNextIndex;
+    unsigned int mAppendIndex;
+    unsigned int mWriteIndex;
 
     std::mutex mLock;
+    std::mutex mFileLock;
 };
 
 

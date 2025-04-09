@@ -28,6 +28,7 @@ void NaiveLogger::addLog(const LogLevel& lvl, const std::string& msg)
     };
     
     size_t messageSize = message.size();
+    mLock.lock();
     if (BufferSize < mCurrentIndex + messageSize) {
         write();
     }
@@ -35,7 +36,6 @@ void NaiveLogger::addLog(const LogLevel& lvl, const std::string& msg)
         assert(("Log message exceeds buffer size"));
     }
     
-    mLock.lock();
     std::memcpy(mBuffer + mCurrentIndex, message.c_str(), messageSize);
     mCurrentIndex += messageSize;
     mLock.unlock();
@@ -43,12 +43,8 @@ void NaiveLogger::addLog(const LogLevel& lvl, const std::string& msg)
 
 void NaiveLogger::write()
 {
-    mLock.lock();
-
     mFile.open(mFilePath, std::fstream::app);
     mFile.write(mBuffer, mCurrentIndex);
     mFile.close();
     mCurrentIndex = 0;
-
-    mLock.unlock();
 }

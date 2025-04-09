@@ -30,11 +30,11 @@ private:
 
     static thread_local char mBuffer1[BufferSize];
     static thread_local char mBuffer2[BufferSize];
-    static thread_local char* mCurrentBuffer;
-    static thread_local char* mNextBuffer;
+    static thread_local char* mAppendBuffer;
+    static thread_local char* mWriteBuffer;
 
-    static thread_local unsigned int mCurrentIndex;
-    static thread_local unsigned int mNextIndex;
+    static thread_local unsigned int mAppendIndex;
+    static thread_local unsigned int mWriteIndex;
 
     std::mutex mLock;
 };
