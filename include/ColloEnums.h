@@ -6,10 +6,11 @@
 enum LogLevel {
     debug,
     info,
-    fatal,
+    crit,
     warn,
 };
     
 std::string levelToString(const LogLevel& lvl);
+const char* levelToCString(const LogLevel& lvl);
 
 #endif // !COLLO_ENUMS_H

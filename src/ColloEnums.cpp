@@ -2,29 +2,24 @@
 
 std::string levelToString(const LogLevel& lvl)
 {
-    std::string level;
     switch (lvl)
     {
-    case LogLevel::debug: {
-        level = "DEBUG";
-        break;
+    case LogLevel::debug: { return "DEBUG"; }
+    case LogLevel::info: { return "INFO"; }
+    case LogLevel::crit: { return "CRIT"; }
+    case LogLevel::warn: { return "WARN"; }
+    default: { return "INVALID_LEVEL"; }
     }
-    case LogLevel::info: {
-        level = "INFO";
-        break;
+}
+
+const char* levelToCString(const LogLevel& lvl)
+{
+    switch (lvl)
+    {
+    case LogLevel::debug: { return "DBUG"; }
+    case LogLevel::info: { return "INFO"; }
+    case LogLevel::crit: { return "CRIT"; }
+    case LogLevel::warn: { return "WARN"; }
+    default: { return "EROR"; }
     }
-    case LogLevel::fatal: {
-        level = "FATAL";
-        break;
-    }
-    case LogLevel::warn: {
-        level = "WARN";
-        break;
-    }
-    default: {
-        level = "INVALID_LEVEL";
-        break;
-    }
-    }
-    return level;
 }
