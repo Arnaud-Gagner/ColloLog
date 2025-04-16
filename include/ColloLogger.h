@@ -7,17 +7,19 @@
 #include "ColloEnums.h"
 
 // TODO: lock-free
-// TODO: optimize log message format
 class ColloLogger
 {
 public:
     ColloLogger(const std::string& filePath);
     ~ColloLogger();
 
-    void addLog(const std::string& msg);
+    void addLog(const std::string_view& msg);
 
 private:
     static constexpr size_t BufferSize = 1024;
+    static constexpr size_t MinimalLogSize = 27;
+    static constexpr size_t LevelSize = 6;
+    static constexpr size_t TimeSize = 20;
 
 private:
     void swapBuffers();

@@ -27,23 +27,33 @@ ColloLogger::~ColloLogger()
     }
 }
 
-void ColloLogger::addLog(const std::string& msg)
+void ColloLogger::addLog(const std::string_view& msg)
 {
-    std::string message = std::to_string(static_cast<int>(std::clock()));
-    message += " INFO ";
-    message += msg;
-    message += '\n';
-
-    size_t size = message.size();
+    clock_t time = std::clock();
+    size_t msgSize = msg.size();
+    size_t size = MinimalLogSize + msgSize;
 
     mLock.lock();
     if (BufferSize <= mAppendIndex + size) {
         swapBuffers();
     }
-    std::memcpy(mAppendBuffer + mAppendIndex, message.c_str(), size);
-    mAppendIndex += size;
-    mLock.unlock(); 
+
+    char* tempIndex = mAppendBuffer + mAppendIndex;
+    std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(time));
+    tempIndex = result.ptr;
+
+    const char* level = " INFO ";
+    std::memcpy(tempIndex, level, LevelSize);
+    tempIndex += LevelSize;
     
+    std::memcpy(tempIndex, msg.data(), msgSize);
+    tempIndex += msgSize;
+
+    *tempIndex++ = '\n';
+
+    mAppendIndex = static_cast<size_t>(tempIndex - mAppendBuffer);
+    mLock.unlock();
+
     if (BufferSize <= mAppendIndex + size) {
         write();
     }
