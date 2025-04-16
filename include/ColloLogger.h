@@ -14,7 +14,7 @@ public:
     ColloLogger(const std::string& filePath);
     ~ColloLogger();
 
-    void addLog(const LogLevel& lvl, const std::string& msg);
+    void addLog(const std::string& msg);
 
 private:
     static constexpr size_t BufferSize = 1024;
