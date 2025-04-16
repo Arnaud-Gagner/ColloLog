@@ -4,10 +4,10 @@
 #include <string>
 
 enum LogLevel {
-    debug,
-    info,
-    crit,
-    warn,
+    debug = 0,
+    info = 1,
+    crit = 3,
+    warn = 2,
 };
     
 std::string levelToString(const LogLevel& lvl);

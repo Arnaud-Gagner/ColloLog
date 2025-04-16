@@ -9,7 +9,8 @@
 #include <iostream>
 
 ColloLogger::ColloLogger(const std::string& filePath)
-    : mFilePath{ filePath}, mAppendIndex{}, mWriteIndex{}
+    : mFilePath{ filePath}, mAppendIndex{},
+    mWriteIndex{}, mLevel{ LogLevel::debug }
 {
     memset(mBuffer1, 0, BufferSize);
     memset(mBuffer2, 0, BufferSize);
@@ -27,7 +28,12 @@ ColloLogger::~ColloLogger()
     }
 }
 
-void ColloLogger::addLog(const std::string_view& msg)
+void ColloLogger::setLogLevel(const LogLevel& lvl)
+{
+    mLevel = lvl;
+}
+
+void ColloLogger::addCrit(const std::string_view& msg)
 {
     clock_t time = std::clock();
     size_t msgSize = msg.size();
@@ -42,7 +48,108 @@ void ColloLogger::addLog(const std::string_view& msg)
     std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(time));
     tempIndex = result.ptr;
 
+    const char* level = " CRIT ";
+    std::memcpy(tempIndex, level, LevelSize);
+    tempIndex += LevelSize;
+    
+    std::memcpy(tempIndex, msg.data(), msgSize);
+    tempIndex += msgSize;
+
+    *tempIndex++ = '\n';
+
+    mAppendIndex = static_cast<size_t>(tempIndex - mAppendBuffer);
+    mLock.unlock();
+
+    if (BufferSize <= mAppendIndex + size) {
+        write();
+    }
+}
+
+void ColloLogger::addDebug(const std::string_view& msg)
+{
+    if (mLevel != debug) { return; }
+
+    clock_t time = std::clock();
+    size_t msgSize = msg.size();
+    size_t size = MinimalLogSize + msgSize;
+
+    mLock.lock();
+    if (BufferSize <= mAppendIndex + size) {
+        swapBuffers();
+    }
+
+    char* tempIndex = mAppendBuffer + mAppendIndex;
+    std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(time));
+    tempIndex = result.ptr;
+
+    const char* level = " DBUG ";
+    std::memcpy(tempIndex, level, LevelSize);
+    tempIndex += LevelSize;
+    
+    std::memcpy(tempIndex, msg.data(), msgSize);
+    tempIndex += msgSize;
+
+    *tempIndex++ = '\n';
+
+    mAppendIndex = static_cast<size_t>(tempIndex - mAppendBuffer);
+    mLock.unlock();
+
+    if (BufferSize <= mAppendIndex + size) {
+        write();
+    }
+}
+
+void ColloLogger::addInfo(const std::string_view& msg)
+{
+    if (mLevel > info) { return; }
+    clock_t time = std::clock();
+    size_t msgSize = msg.size();
+    size_t size = MinimalLogSize + msgSize;
+
+    mLock.lock();
+    if (BufferSize <= mAppendIndex + size) {
+        swapBuffers();
+    }
+
+    char* tempIndex = mAppendBuffer + mAppendIndex;
+    std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(time));
+    tempIndex = result.ptr;
+
     const char* level = " INFO ";
+    std::memcpy(tempIndex, level, LevelSize);
+    tempIndex += LevelSize;
+    
+    std::memcpy(tempIndex, msg.data(), msgSize);
+    tempIndex += msgSize;
+
+    *tempIndex++ = '\n';
+
+    mAppendIndex = static_cast<size_t>(tempIndex - mAppendBuffer);
+    mLock.unlock();
+
+    if (BufferSize <= mAppendIndex + size) {
+        write();
+    }
+}
+
+void ColloLogger::addWarn(const std::string_view& msg)
+{
+    if (mLevel > warn) { return; }
+
+    clock_t time = std::clock();
+    size_t msgSize = msg.size();
+    size_t size = MinimalLogSize + msgSize;
+
+    mLock.lock();
+    if (BufferSize <= mAppendIndex + size) {
+        swapBuffers();
+    }
+
+    char* tempIndex = mAppendBuffer + mAppendIndex;
+    std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(time));
+    tempIndex = result.ptr;
+
+    const char* level = " WARN ";
     std::memcpy(tempIndex, level, LevelSize);
     tempIndex += LevelSize;
     

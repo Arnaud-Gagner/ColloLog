@@ -13,7 +13,12 @@ public:
     ColloLogger(const std::string& filePath);
     ~ColloLogger();
 
-    void addLog(const std::string_view& msg);
+    void setLogLevel(const LogLevel& lvl);
+
+    void addCrit(const std::string_view& msg);
+    void addDebug(const std::string_view& msg);
+    void addInfo(const std::string_view& msg);
+    void addWarn(const std::string_view& msg);
 
 private:
     static constexpr size_t BufferSize = 1024;
@@ -36,6 +41,8 @@ private:
 
     unsigned int mAppendIndex;
     unsigned int mWriteIndex;
+
+    LogLevel mLevel;
 
     std::mutex mLock;
     std::mutex mFileLock;
