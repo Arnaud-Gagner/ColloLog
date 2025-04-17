@@ -8,13 +8,13 @@
 #include "ColloEnums.h"
 #include "RingBuffer.h"
 
-class LockFreeZAllocator
+class RingLogger
 {
 public:
-    LockFreeZAllocator(const std::string& filepath, size_t size = RingBuffer::DefaultSize);
-    ~LockFreeZAllocator();
+RingLogger(const std::string& filepath, size_t size = RingBuffer::DefaultSize);
+    ~RingLogger();
 
-    void addLog(const LogLevel& lvl, const std::string& message);
+    void addLog(const std::string& message);
 
 private:
     void write();
