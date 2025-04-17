@@ -15,7 +15,7 @@ public:
     LocalLogger(const std::string& filePath);
     ~LocalLogger();
 
-    void addLog(const LogLevel& lvl, const std::string& msg);
+    void addLog(const char* msg);
 
 private:
     void swapBuffers();
@@ -23,6 +23,9 @@ private:
 
 private:
     static const size_t BufferSize = 1024;
+    static constexpr size_t MinimalLogSize = 27;
+    static constexpr size_t LevelSize = 6;
+    static constexpr size_t TimeSize = 20;
 
 private:
     std::string mFilePath;

@@ -22,7 +22,7 @@ public:
     void addWarn(const std::string_view& msg);*/
 
 private:
-    static constexpr size_t BufferSize = 100 * 1024;
+    static constexpr size_t BufferSize = 1024;
     static constexpr size_t MinimalLogSize = 27;
     static constexpr size_t LevelSize = 6;
     static constexpr size_t TimeSize = 20;

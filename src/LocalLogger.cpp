@@ -1,7 +1,6 @@
 #include "LocalLogger.h"
 
-#include <chrono>
-#include <future>
+#include <charconv>
 
 thread_local char LocalLogger::mBuffer1[LocalLogger::BufferSize];
 thread_local char LocalLogger::mBuffer2[LocalLogger::BufferSize];
@@ -17,37 +16,40 @@ LocalLogger::LocalLogger(const std::string& filepath)
 {
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
+    mFile.open(mFilePath, std::ios::app);
 }
 
 LocalLogger::~LocalLogger()
 {
-    write();
+    mFile << mWriteBuffer;
     if (mFile.is_open()) {
         mFile.close();
     }
 }
 
-void LocalLogger::addLog(const LogLevel& lvl, const std::string& msg)
+void LocalLogger::addLog(const char* msg)
 {
-    auto time = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-    std::string message = "[";
-    message += std::to_string(time.time_since_epoch().count());
-    message += ']';
-    message += levelToString(lvl);
-    message += ' ';
-    message += msg;
-    message += '\n';
-    size_t messageSize = message.size();
-    const char* cstr = message.c_str();
+    size_t msgSize = strlen(msg);
 
-    if (BufferSize < mAppendIndex + messageSize) {
+    if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
         write();
     }
-    for (int i = 0; i < messageSize; i++) {
-        mAppendBuffer[mAppendIndex+i] = message[i];
-    }
-    mAppendIndex += messageSize;
+    char* tempIndex = mAppendBuffer + mAppendIndex;
+    std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(std::clock()));
+    tempIndex = result.ptr;
+
+    const char* level = " CRIT ";
+    std::memcpy(tempIndex, level, LevelSize);
+    tempIndex += LevelSize;
+    
+    std::memcpy(tempIndex, msg, msgSize);
+    tempIndex += msgSize;
+
+    *tempIndex++ = '\n';
+
+    mAppendIndex = static_cast<size_t>(tempIndex - mAppendBuffer);
+
 }
 
 void LocalLogger::swapBuffers()
@@ -59,9 +61,6 @@ void LocalLogger::swapBuffers()
 
 void LocalLogger::write()
 {
-    mLock.lock();
-    mFile.open(mFilePath, std::fstream::app);
-    mFile.write(mWriteBuffer, mWriteIndex);
-    mFile.close();
-    mLock.unlock();
+    std::unique_lock<std::mutex> lock(mLock);
+    mFile << mWriteBuffer;
 }
