@@ -7,17 +7,21 @@
 
 #include "ColloEnums.h"
 
-// TODO: lock-free stuff when writting in file
-// TODO: flush at end of thread
 class LocalLogger
 {
 public:
     LocalLogger(const std::string& filePath);
     ~LocalLogger();
 
-    void addLog(const char* msg);
+    void setlevel(const LogLevel& lvl);
+
+    void addCrit(const char* msg);
+    void addDebug(const char* msg);
+    void addInfo(const char* msg);
+    void addWarn(const char* msg);
 
 private:
+    void addLog(const size_t& size, const char* msg, const LogLevel& lvl);
     void swapBuffers();
     void write();
 
@@ -38,6 +42,7 @@ private:
 
     static thread_local unsigned int mAppendIndex;
     static thread_local unsigned int mWriteIndex;
+    static thread_local LogLevel mLevel;
 
     std::mutex mLock;
 };

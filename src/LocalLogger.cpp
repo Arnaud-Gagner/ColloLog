@@ -10,6 +10,7 @@ thread_local char* LocalLogger::mWriteBuffer = LocalLogger::mBuffer2;
 
 thread_local unsigned int LocalLogger::mAppendIndex = 0;
 thread_local unsigned int LocalLogger::mWriteIndex = 0;
+thread_local LogLevel LocalLogger::mLevel = debug;
 
 LocalLogger::LocalLogger(const std::string& filepath)
     : mFilePath{ filepath }
@@ -27,14 +28,59 @@ LocalLogger::~LocalLogger()
     }
 }
 
-void LocalLogger::addLog(const char* msg)
+void LocalLogger::setlevel(const LogLevel& lvl)
+{
+    mLevel = lvl;
+}
+
+void LocalLogger::addCrit(const char* msg)
 {
     size_t msgSize = strlen(msg);
-
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
         write();
     }
+    addLog(msgSize, msg, crit);
+}
+
+void LocalLogger::addDebug(const char* msg)
+{
+    if (debug < mLevel) { return; }
+
+    size_t msgSize = strlen(msg);
+    if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
+        swapBuffers();
+        write();
+    }
+    addLog(msgSize, msg, debug);
+}
+
+void LocalLogger::addInfo(const char* msg)
+{
+    if (debug < mLevel) { return; }
+
+    size_t msgSize = strlen(msg);
+    if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
+        swapBuffers();
+        write();
+    }
+    addLog(msgSize, msg, info);
+}
+
+void LocalLogger::addWarn(const char* msg)
+{
+    if (warn < mLevel) { return; }
+
+    size_t msgSize = strlen(msg);
+    if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
+        swapBuffers();
+        write();
+    }
+    addLog(msgSize, msg, warn);
+}
+
+void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lvl)
+{
     char* tempIndex = mAppendBuffer + mAppendIndex;
     std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(std::clock()));
     tempIndex = result.ptr;
@@ -43,13 +89,11 @@ void LocalLogger::addLog(const char* msg)
     std::memcpy(tempIndex, level, LevelSize);
     tempIndex += LevelSize;
     
-    std::memcpy(tempIndex, msg, msgSize);
-    tempIndex += msgSize;
-
+    std::memcpy(tempIndex, msg, size);
+    tempIndex += size;
     *tempIndex++ = '\n';
 
     mAppendIndex = static_cast<size_t>(tempIndex - mAppendBuffer);
-
 }
 
 void LocalLogger::swapBuffers()
