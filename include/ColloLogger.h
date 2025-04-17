@@ -16,10 +16,9 @@ public:
     void setLogLevel(const LogLevel& lvl);
 
     void addCrit(const char* msg);
-    /*
-    void addDebug(const std::string_view& msg);
-    void addInfo(const std::string_view& msg);
-    void addWarn(const std::string_view& msg);*/
+    void addDebug(const char* msg);
+    void addInfo(const char* msg);
+    void addWarn(const char* msg);
 
 private:
     static constexpr size_t BufferSize = 1024;
@@ -28,6 +27,7 @@ private:
     static constexpr size_t TimeSize = 20;
 
 private:
+    void addLog(const size_t size, const char* msg, const LogLevel& lvl);
     void swapBuffers();
     void write();
 
