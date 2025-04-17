@@ -85,7 +85,7 @@ void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lv
     std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(std::clock()));
     tempIndex = result.ptr;
 
-    const char* level = " CRIT ";
+    const char* level = levelToCString(lvl);
     std::memcpy(tempIndex, level, LevelSize);
     tempIndex += LevelSize;
     
