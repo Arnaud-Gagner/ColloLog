@@ -15,13 +15,14 @@ public:
 
     void setLogLevel(const LogLevel& lvl);
 
-    void addCrit(const std::string_view& msg);
+    void addCrit(const char* msg);
+    /*
     void addDebug(const std::string_view& msg);
     void addInfo(const std::string_view& msg);
-    void addWarn(const std::string_view& msg);
+    void addWarn(const std::string_view& msg);*/
 
 private:
-    static constexpr size_t BufferSize = 1024;
+    static constexpr size_t BufferSize = 100 * 1024;
     static constexpr size_t MinimalLogSize = 27;
     static constexpr size_t LevelSize = 6;
     static constexpr size_t TimeSize = 20;
@@ -47,6 +48,5 @@ private:
     std::mutex mLock;
     std::mutex mFileLock;
 };
-
 
 #endif // !COLLO_LOGGER_H
