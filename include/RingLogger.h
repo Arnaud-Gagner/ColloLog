@@ -27,9 +27,7 @@ private:
 private:
     std::mutex mLocker;
     RingBuffer mBuffer;
-
-    // std::thread mWriter;
-    // std::condition_variable mWriteNotifier;
+    
 };
 
 #endif // !RING_LOGGER_H

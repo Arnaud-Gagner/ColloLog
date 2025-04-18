@@ -9,13 +9,10 @@
 RingLogger::RingLogger(const std::string& filePath, const size_t& size)
     : mBuffer(size, filePath)
 {
-    // mWriter = std::thread(&RingLogger::write, this);
 }
 
 RingLogger::~RingLogger()
 {
-
-    // pool.stop();
 }
 
 void RingLogger::addLog(const char* msg)
@@ -42,9 +39,10 @@ void RingLogger::addLog(const char* msg)
     {
         std::unique_lock<std::mutex> lock(mLocker);
         mBuffer.append(temp);
-        write();
+        if (mBuffer.isFull()) {
+            mBuffer.flush();
+        }
     }
-    // TODO: notify writer thread
 }
 
 void RingLogger::write()
