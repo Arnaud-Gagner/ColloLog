@@ -2,6 +2,10 @@
 
 #include <charconv>
 
+#include "ThreadPool.h"
+
+extern ThreadPool pool;
+
 thread_local char LocalLogger::mBuffer1[LocalLogger::BufferSize];
 thread_local char LocalLogger::mBuffer2[LocalLogger::BufferSize];
 
@@ -22,7 +26,7 @@ LocalLogger::LocalLogger(const std::string& filepath)
 
 LocalLogger::~LocalLogger()
 {
-    mFile << mWriteBuffer;
+    std::this_thread::sleep_for(std::chrono::seconds(2));   // TODO: remove it without causing segfault
     if (mFile.is_open()) {
         mFile.close();
     }
@@ -38,7 +42,6 @@ void LocalLogger::addCrit(const char* msg)
     size_t msgSize = strlen(msg);
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
-        write();
     }
     addLog(msgSize, msg, crit);
 }
@@ -50,7 +53,6 @@ void LocalLogger::addDebug(const char* msg)
     size_t msgSize = strlen(msg);
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
-        write();
     }
     addLog(msgSize, msg, debug);
 }
@@ -62,7 +64,6 @@ void LocalLogger::addInfo(const char* msg)
     size_t msgSize = strlen(msg);
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
-        write();
     }
     addLog(msgSize, msg, info);
 }
@@ -74,13 +75,12 @@ void LocalLogger::addWarn(const char* msg)
     size_t msgSize = strlen(msg);
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
-        write();
     }
     addLog(msgSize, msg, warn);
 }
 
 void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lvl)
-{
+{    
     char* tempIndex = mAppendBuffer + mAppendIndex;
     std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(std::clock()));
     tempIndex = result.ptr;
@@ -101,10 +101,14 @@ void LocalLogger::swapBuffers()
     std::swap(mAppendBuffer, mWriteBuffer);
     mWriteIndex = mAppendIndex;
     mAppendIndex = 0;
+    const size_t size = mWriteIndex;
+    char* bufferCopy = new char[size];
+    std::memcpy(bufferCopy, mWriteBuffer, size);
+    pool.addTask([this, bufferCopy, size] { write(bufferCopy, size); });
 }
 
-void LocalLogger::write()
+void LocalLogger::write(const char* data, const size_t size)
 {
     std::unique_lock<std::mutex> lock(mLock);
-    mFile << mWriteBuffer;
+    mFile.write(data, size);
 }

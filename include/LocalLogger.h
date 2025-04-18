@@ -23,7 +23,7 @@ public:
 private:
     void addLog(const size_t& size, const char* msg, const LogLevel& lvl);
     void swapBuffers();
-    void write();
+    void write(const char* data, const size_t size);
 
 private:
     static const size_t BufferSize = 1024;

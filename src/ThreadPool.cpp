@@ -4,6 +4,7 @@
 
 ThreadPool::ThreadPool(unsigned int nThreads)
 {
+    mIsRunning = true;
     mNumThread = nThreads;
     assert(mNumThread < std::thread::hardware_concurrency()
         && "ThreadPool: the number of thread allocated in the pool exceeds the number of available thread by the hardware.");
@@ -15,23 +16,24 @@ ThreadPool::ThreadPool(unsigned int nThreads)
 
 ThreadPool::~ThreadPool()
 {
-    mIsRunning = false;
-
-    std::unique_lock<std::mutex> lock(mLock);
+    {
+        std::unique_lock<std::mutex> lock(mLock);
+        mIsRunning = false;
+    }
     mTaskNotifier.notify_all();
 
     for (std::thread& thread : mThreads) {
-        if (thread.joinable()) {
-            thread.join();
-        }
+        thread.join();
     }
     mThreads.clear();
 }
 
 void ThreadPool::addTask(const std::function<void()>& task)
 {
-    std::unique_lock<std::mutex> lock(mTaskLock);
-    mTasks.push(task);
+    {
+        std::unique_lock<std::mutex> lock(mTaskLock);
+        mTasks.emplace(task);
+    }
     mTaskNotifier.notify_one();
 }
 
@@ -42,11 +44,15 @@ void ThreadPool::threadLoop()
         {
             std::unique_lock<std::mutex> lock(mTaskLock);
             mTaskNotifier.wait(lock, [this] {
-                return mTasks.empty() && mIsRunning;
+                return !mTasks.empty() || !mIsRunning;
             });
-            task = mTasks.front();
-            mTasks.pop();
+            if (!mTasks.empty()) {
+                task = std::move(mTasks.front());
+                mTasks.pop();
+            }
         }
-        task();
+        if (task) {
+            task();
+        }
     }
 }
