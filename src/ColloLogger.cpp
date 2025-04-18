@@ -5,6 +5,10 @@
 #include <charconv>
 #include <iostream>
 
+#include "ThreadPool.h"
+
+extern ThreadPool pool;
+
 ColloLogger::ColloLogger(const std::string& filePath)
     : mFilePath{ filePath }, mAppendIndex{},
     mWriteIndex{}, mLevel{ LogLevel::debug }
@@ -19,7 +23,8 @@ ColloLogger::ColloLogger(const std::string& filePath)
 ColloLogger::~ColloLogger()
 {
     swapBuffers();
-    write();
+    pool.addTask([this]{ write(); });
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     if (mFile.is_open()) {
         mFile.close();
     }
@@ -77,7 +82,7 @@ void ColloLogger::addInfo(const char* msg)
         swapBuffers();
         addLog(msgSize, msg, info);
         mLock.unlock();
-        write();
+        pool.addTask([this]{ write(); });
     }
     else {
         addLog(msgSize, msg, info);
@@ -96,7 +101,7 @@ void ColloLogger::addWarn(const char* msg)
         swapBuffers();
         addLog(msgSize, msg, warn);
         mLock.unlock();
-        write();
+        pool.addTask([this]{ write(); });
     }
     else {
         addLog(msgSize, msg, warn);
