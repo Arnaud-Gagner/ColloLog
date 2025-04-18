@@ -37,6 +37,11 @@ void ThreadPool::addTask(const std::function<void()>& task)
     mTaskNotifier.notify_one();
 }
 
+void ThreadPool::stop()
+{
+    mIsRunning = false;
+}
+
 void ThreadPool::threadLoop()
 {
     while(mIsRunning) {

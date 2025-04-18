@@ -1,12 +1,19 @@
 #include "RingBuffer.h"
 
-#include <sstream>
+#include <iostream>
 
-RingBuffer::RingBuffer(size_t size)
+RingBuffer::RingBuffer(const size_t& size, const std::string& filePath)
     : mMaxSize{ size }, mHead{}, mTail{},
-    mIsFull{}
+    mIsFull{}, mFilePath{ filePath }
 {
-    mBuffer.resize(mMaxSize);
+    mFile.open(mFilePath, std::ios::app);
+}
+
+RingBuffer::~RingBuffer()
+{
+    if (mFile.is_open()) {
+        mFile.close();
+    }
 }
 
 bool RingBuffer::isFull() const
@@ -14,29 +21,31 @@ bool RingBuffer::isFull() const
     return mIsFull;
 }
 
-void RingBuffer::append(const std::string& message)
+void RingBuffer::append(const char* message)
 {
     mTail = (mTail + mIsFull) % mMaxSize;
 
-    mBuffer[mHead] = message;
+    std::strncpy(mBuffer[mHead], message, 256);
+
     mHead = (mHead + 1) % mMaxSize;
     mIsFull = mHead == mTail;
 }
 
-void RingBuffer::flush(std::ofstream& file, const std::string& filePath)
+void RingBuffer::flush()
 {
-    std::stringstream output;
     size_t index = mTail;
-
     for (int i{}; i < mMaxSize; i++) {
-        output << mBuffer[index];
+        // std::cout << "-" << index;
+        mFile << mBuffer[index];
         index = (index + 1) % mMaxSize;
     }
-    
-    file.open(filePath, std::ios::app);
-    file.write(output.str().c_str(), output.str().size());
-    file.close();
-
+    // std::cout << '\n';
     mHead = mTail;
     mIsFull = false;
+}
+
+void RingBuffer::flushTail()
+{
+    mFile << mBuffer[mTail];
+    mTail = (mTail + mIsFull) % mMaxSize;
 }

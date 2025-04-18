@@ -12,6 +12,7 @@ public:
     ~ThreadPool();
 
     void addTask(const std::function<void()>& task);
+    void stop();
 
 private:
     void threadLoop();

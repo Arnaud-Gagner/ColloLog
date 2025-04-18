@@ -26,6 +26,7 @@ LocalLogger::LocalLogger(const std::string& filepath)
 
 LocalLogger::~LocalLogger()
 {
+    swapBuffers();
     std::this_thread::sleep_for(std::chrono::seconds(2));   // TODO: remove it without causing segfault
     if (mFile.is_open()) {
         mFile.close();

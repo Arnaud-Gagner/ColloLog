@@ -1,9 +1,9 @@
-#ifndef RING_LOCK_FREE_Z_ALLOCATOR_H
-#define RING_LOCK_FREE_Z_ALLOCATOR_H
+#ifndef RING_LOGGER_H
+#define RING_LOGGER_H
 
+#include <condition_variable>
 #include <fstream>
 #include <mutex>
-#include <string>
 
 #include "ColloEnums.h"
 #include "RingBuffer.h"
@@ -11,21 +11,25 @@
 class RingLogger
 {
 public:
-RingLogger(const std::string& filepath, size_t size = RingBuffer::DefaultSize);
+    RingLogger(const std::string& filepath, const size_t& size = RingBuffer::DefaultSize);
     ~RingLogger();
 
-    void addLog(const std::string& message);
+    void addLog(const char* message);
+
+private:
+    static constexpr size_t MinimalLogSize = 27;
+    static constexpr size_t LevelSize = 6;
+    static constexpr size_t TimeSize = 20;
 
 private:
     void write();
 
 private:
-    std::string mFilePath;
-    std::ofstream mFile;
-
-    RingBuffer mBuffer;
-    // TODO: switch to lock-free
     std::mutex mLocker;
+    RingBuffer mBuffer;
+
+    // std::thread mWriter;
+    // std::condition_variable mWriteNotifier;
 };
 
-#endif // !RING_LOCK_FREE_Z_ALLOCATOR_H
+#endif // !RING_LOGGER_H

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <mutex>
 
 class RingBuffer
 {
@@ -11,21 +12,25 @@ public:
     static constexpr size_t DefaultSize = 25;
 
 public:
-    RingBuffer(size_t size = DefaultSize);
-    ~RingBuffer() = default;
+    RingBuffer(const size_t& size, const std::string& filePath);
+    ~RingBuffer();
 
     bool isFull() const;
 
-    void append(const std::string& message);
-    void flush(std::ofstream& file, const std::string& filePath);
+    void append(const char* message);
+    void flush();
+    void flushTail();
 
 private:
-    std::vector<std::string> mBuffer;
+    char mBuffer[DefaultSize][256];
     size_t mHead;
     size_t mTail;
-
     bool mIsFull;
     size_t mMaxSize;
+
+    std::ofstream mFile;
+    std::string mFilePath;
+    std::mutex mLock;
 };
 
 #endif // !RING_BUFFER_H
