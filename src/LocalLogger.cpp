@@ -82,19 +82,19 @@ void LocalLogger::addWarn(const char* msg)
 
 void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lvl)
 {    
-    char* tempIndex = mAppendBuffer + mAppendIndex;
-    std::to_chars_result result = std::to_chars(tempIndex, tempIndex + TimeSize, static_cast<int>(std::clock()));
-    tempIndex = result.ptr;
+    char* message = mAppendBuffer + mAppendIndex;
+    std::to_chars_result result = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
+    message = result.ptr;
 
     const char* level = levelToCString(lvl);
-    std::memcpy(tempIndex, level, LevelSize);
-    tempIndex += LevelSize;
+    std::memcpy(message, level, LevelSize);
+    message += LevelSize;
     
-    std::memcpy(tempIndex, msg, size);
-    tempIndex += size;
-    *tempIndex++ = '\n';
+    std::memcpy(message, msg, size);
+    message += size;
+    *message++ = '\n';
 
-    mAppendIndex = static_cast<size_t>(tempIndex - mAppendBuffer);
+    mAppendIndex = static_cast<size_t>(message - mAppendBuffer);
 }
 
 void LocalLogger::swapBuffers()

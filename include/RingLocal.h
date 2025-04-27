@@ -13,7 +13,12 @@ public:
     RingLocal(const std::string& filePath, const size_t& size = RingBuffer::DefaultSize);
     ~RingLocal();
 
-    void addLog(const char* message);
+    void setLogLevel(const LogLevel& lvl);
+
+    void addCrit(const char* msg);
+    void addDebug(const char* msg);
+    void addInfo(const char* msg);
+    void addWarn(const char* msg);
 
 private:
     static constexpr size_t MinimalLogSize = 27;
@@ -21,6 +26,7 @@ private:
     static constexpr size_t TimeSize = 20;
 
 private:
+    void addLog(const char* message);
     void write();
 
 private:
@@ -28,6 +34,8 @@ private:
     std::string mFilePath;
 
     static thread_local RingBuffer mBuffer;
+
+    LogLevel mLevel;
     std::mutex mLock;
 };
 
