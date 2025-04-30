@@ -93,8 +93,7 @@ void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lv
     std::memcpy(message, msg, size);
     message += size;
     *message++ = '\n';
-
-    mAppendIndex = static_cast<size_t>(message - mAppendBuffer);
+    mAppendIndex = static_cast<unsigned int>(message - mAppendBuffer);
 }
 
 void LocalLogger::swapBuffers()

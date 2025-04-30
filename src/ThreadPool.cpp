@@ -9,7 +9,7 @@ ThreadPool::ThreadPool(unsigned int nThreads)
     assert(mNumThread < std::thread::hardware_concurrency()
         && "ThreadPool: the number of thread allocated in the pool exceeds the number of available thread by the hardware.");
 
-    for (int i{}; i < mNumThread; i++) {
+    for (unsigned int i = 0; i < mNumThread; i++) {
         mThreads.emplace_back(std::thread(&ThreadPool::threadLoop, this));
     }
 }

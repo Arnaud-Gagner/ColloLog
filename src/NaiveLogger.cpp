@@ -80,7 +80,7 @@ void NaiveLogger::addLog(const std::string& msg)
     }
     
     std::memcpy(mBuffer + mCurrentIndex, msg.c_str(), messageSize);
-    mCurrentIndex += messageSize;
+    mCurrentIndex += static_cast<int>(messageSize);
     mLock.unlock();
 }
 
