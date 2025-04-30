@@ -25,7 +25,7 @@ void RingBuffer::append(const char* message)
 {
     mTail = (mTail + mIsFull) % mMaxSize;
 
-    std::strncpy(mBuffer[mHead], message, 256);
+    strncpy_s(mBuffer[mHead], MaxElementSize, message, MaxElementSize);
 
     mHead = (mHead + 1) % mMaxSize;
     mIsFull = mHead == mTail;
@@ -35,11 +35,9 @@ void RingBuffer::flush()
 {
     size_t index = mTail;
     for (int i{}; i < mMaxSize; i++) {
-        // std::cout << "-" << index;
         mFile << mBuffer[index];
         index = (index + 1) % mMaxSize;
     }
-    // std::cout << '\n';
     mHead = mTail;
     mIsFull = false;
 }

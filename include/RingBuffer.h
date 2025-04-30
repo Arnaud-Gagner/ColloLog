@@ -9,6 +9,7 @@
 class RingBuffer
 {
 public:
+    static constexpr size_t MaxElementSize = 256;
     static constexpr size_t DefaultSize = 25;
 
 public:
@@ -22,7 +23,7 @@ public:
     void flushTail();
 
 private:
-    char mBuffer[DefaultSize][256];
+    char mBuffer[DefaultSize][MaxElementSize];
     size_t mHead;
     size_t mTail;
     bool mIsFull;

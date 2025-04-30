@@ -30,11 +30,11 @@ void RingLocal::setLogLevel(const LogLevel& lvl)
 
 void RingLocal::addCrit(const char* msg)
 {
-    size_t size = strlen(msg);    
-    assert(size > 256
+    size_t size = strlen(msg);
+    assert(size + MinimalLogSize > RingBuffer::MaxElementSize
         && "ColloLog::RingLogger Buffer overflow due to too big message.");
 
-    char message[256];
+    char message[RingBuffer::MaxElementSize];
     char* messageIndex = message;
     std::to_chars_result result = std::to_chars(messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
     messageIndex = result.ptr;
@@ -54,11 +54,11 @@ void RingLocal::addDebug(const char* msg)
 {
     if (mLevel > debug) { return; }
 
-    size_t size = strlen(msg);    
-    assert(size > 256
+    size_t size = strlen(msg);
+    assert(size + MinimalLogSize > RingBuffer::MaxElementSize
         && "ColloLog::RingLogger Buffer overflow due to too big message.");
 
-    char message[256];
+    char message[RingBuffer::MaxElementSize];
     char* messageIndex = message;
     std::to_chars_result result = std::to_chars(messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
     messageIndex = result.ptr;
@@ -78,11 +78,11 @@ void RingLocal::addInfo(const char* msg)
 {
     if (mLevel > info) { return; }
 
-    size_t size = strlen(msg);    
-    assert(size > 256
+    size_t size = strlen(msg);
+    assert(size + MinimalLogSize > RingBuffer::MaxElementSize
         && "ColloLog::RingLogger Buffer overflow due to too big message.");
 
-    char message[256];
+    char message[RingBuffer::MaxElementSize];
     char* messageIndex = message;
     std::to_chars_result result = std::to_chars(messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
     messageIndex = result.ptr;
@@ -102,11 +102,11 @@ void RingLocal::addWarn(const char* msg)
 {
     if (mLevel > warn) { return; }
 
-    size_t size = strlen(msg);    
-    assert(size > 256
+    size_t size = strlen(msg);
+    assert(size + MinimalLogSize > RingBuffer::MaxElementSize
         && "ColloLog::RingLogger Buffer overflow due to too big message.");
 
-    char message[256];
+    char message[RingBuffer::MaxElementSize];
     char* messageIndex = message;
     std::to_chars_result result = std::to_chars(messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
     messageIndex = result.ptr;
