@@ -8,9 +8,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/benchmark)
 
 set(SOURCES
     src/main.cpp
+    benchmark/benchmarks.cpp
     src/ThreadPool.cpp
     src/RingBuffer.cpp
     src/ColloEnums.cpp
