@@ -8,18 +8,17 @@
 
 extern ThreadPool pool;
 
-thread_local RingBuffer RingLocal::mBuffer(25,"../ColloLog/Logs/ringlocal.log");
+thread_local RingBuffer RingLocal::mBuffer(25,"../ColloLog/Logs/test.log");
 
 RingLocal::RingLocal(const std::string& filePath, const size_t& size)
     : mFilePath{ filePath }, mLevel{ debug }
 {
+    mFile.open(mFilePath, std::ios::trunc);
+    mFile.close();
 }
 
 RingLocal::~RingLocal()
 {
-    if (mFile.is_open()) {
-        mFile.close();
-    }
 }
 
 void RingLocal::setLogLevel(const LogLevel& lvl)

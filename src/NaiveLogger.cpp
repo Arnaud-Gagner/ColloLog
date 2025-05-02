@@ -9,6 +9,8 @@
 NaiveLogger::NaiveLogger(const std::string& filepath)
     : mFilePath{ filepath }, mCurrentIndex{}, mLevel{ debug }
 {
+    mFile.open(mFilePath, std::ios::trunc);
+    mFile.close();
     memset(mBuffer, 0, BufferSize);
 }
 
@@ -86,7 +88,7 @@ void NaiveLogger::addLog(const std::string& msg)
 
 void NaiveLogger::write()
 {
-    mFile.open(mFilePath, std::fstream::app);
+    mFile.open(mFilePath, std::ios::app);
     mFile.write(mBuffer, mCurrentIndex);
     mFile.close();
     mCurrentIndex = 0;
