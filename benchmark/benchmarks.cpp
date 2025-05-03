@@ -1,11 +1,5 @@
 #include "benchmarks.h"
 
-#include "ColloLogger.h"
-#include "LocalLogger.h"
-#include "NaiveLogger.h"
-#include "RingLocal.h"
-#include "RingLogger.h"
-
 #include <chrono>
 #include <cstring>
 #include <iostream>
@@ -13,10 +7,15 @@
 #include <string>
 #include <thread>
 
+#include "ColloLogger.h"
+#include "LocalLogger.h"
+#include "NaiveLogger.h"
+#include "RingLocal.h"
+#include "RingLogger.h"
+
 const unsigned int Iterations = 10;
 const int MessagesPerThread = 1000000;
 const char FooWasCalledMessage[] = "Benchmark::foo was called";
-const char LongMessage[] = "";
 
 std::thread colloTask(ColloLogger& logger, const char* msg = "")
 {
@@ -38,7 +37,7 @@ std::thread colloDropRate(ColloLogger& logger)
     return colloThread;
 }
 
-std::thread localLTask(LocalLogger& logger, const char* msg = "")
+std::thread localTask(LocalLogger& logger, const char* msg = "")
 {
     std::thread colloThread([&] {
         for (int i = 0; i < MessagesPerThread; ++i) {
@@ -120,12 +119,12 @@ std::thread rLoggerDropRate(RingLogger& logger)
 
 long long runLongBenchmark(unsigned int nThreads)
 {
-    LocalLogger collo("Logs/test.log");
+    ColloLogger collo("Logs/test.log");
     std::queue<std::thread> threads;
     auto startTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
 
     for (unsigned i = 0; i < nThreads; ++i) {
-        threads.push(std::move(localLTask(collo, FooWasCalledMessage)));
+        threads.push(std::move(colloTask(collo, FooWasCalledMessage)));
     }
     size_t threads_number = threads.size();
     for (unsigned int i = 0; i < threads_number; ++i) {
