@@ -28,10 +28,9 @@ private:
 
 private:
     void addLog(const char* message);
-    void write();
 
 private:
-    std::mutex mLocker;
+    std::atomic_flag mAddingFlag = ATOMIC_FLAG_INIT;
     RingBuffer mBuffer;
     LogLevel mLevel;
 };

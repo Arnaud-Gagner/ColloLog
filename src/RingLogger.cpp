@@ -117,14 +117,7 @@ void RingLogger::addWarn(const char* msg)
 
 void RingLogger::addLog(const char* msg)
 {
-    std::unique_lock<std::mutex> lock(mLocker);
+    while (mAddingFlag.test_and_set(std::memory_order_acquire)) {}
     mBuffer.append(msg);
-    if (mBuffer.isFull()) {
-        mBuffer.flush();
-    }
-}
-
-void RingLogger::write()
-{
-    mBuffer.flushTail();
+    mAddingFlag.clear(std::memory_order_release);
 }
