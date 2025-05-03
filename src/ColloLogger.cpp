@@ -13,8 +13,6 @@ ColloLogger::ColloLogger(const std::string& filePath)
     : mFilePath{ filePath }, mAppendIndex{},
     mWriteIndex{}, mLevel{ LogLevel::debug }
 {
-    mFile.open(mFilePath, std::ios::trunc);
-    mFile.close();
     memset(mBuffer1, 0, BufferSize);
     memset(mBuffer2, 0, BufferSize);
     mAppendBuffer = mBuffer1;
@@ -25,7 +23,8 @@ ColloLogger::ColloLogger(const std::string& filePath)
 ColloLogger::~ColloLogger()
 {
     swapBuffers();
-    // pool.addTask([this]{ write(); });
+    pool.addTask([this]{ write(); });
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     if (mFile.is_open()) {
         mFile.close();
     }
@@ -45,8 +44,7 @@ void ColloLogger::addCrit(const char* msg)
         swapBuffers();
         addLog(msgSize, msg, crit);
         mLock.unlock();
-        write();
-        // pool.addTask([this]{ write(); });
+        pool.addTask([this]{ write(); });
     }
     else {
         addLog(msgSize, msg, crit);
@@ -84,8 +82,7 @@ void ColloLogger::addInfo(const char* msg)
         swapBuffers();
         addLog(msgSize, msg, info);
         mLock.unlock();
-        write();
-        // pool.addTask([this]{ write(); });
+        pool.addTask([this]{ write(); });
     }
     else {
         addLog(msgSize, msg, info);

@@ -27,7 +27,7 @@ LocalLogger::LocalLogger(const std::string& filepath)
 LocalLogger::~LocalLogger()
 {
     swapBuffers();
-    std::this_thread::sleep_for(std::chrono::seconds(2));   // TODO: remove it without causing segfault
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     if (mFile.is_open()) {
         mFile.close();
     }
@@ -104,7 +104,8 @@ void LocalLogger::swapBuffers()
     const size_t size = mWriteIndex;
     char* bufferCopy = new char[size];
     std::memcpy(bufferCopy, mWriteBuffer, size);
-    pool.addTask([this, bufferCopy, size] { write(bufferCopy, size); });
+    write(bufferCopy, size);
+    // pool.addTask([this, bufferCopy, size] { write(bufferCopy, size); });
 }
 
 void LocalLogger::write(const char* data, const size_t size)
