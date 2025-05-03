@@ -1,0 +1,36 @@
+D:/Iteration1\spdlog\result.csv
+D:/Iteration1\NaiveLog\result.csv
+D:/Iteration1\ColloLog\result.csv
+D:/Iteration1\RingLocal\result.csv
+D:/Iteration1\RingLog\result.csv
+D:/Iteration1\LocalLog\result.csv
+Name: spdlog
+	Drop Rate: 0.9999992
+	Throughput: 0.8950100396199658
+	Latency: 0.7836515873660191
+	Overall: 3.9098174341619867
+Name: NaiveLog
+	Drop Rate: 1.0
+	Throughput: 0.0
+	Latency: 0.0
+	Overall: 1.0
+Name: ColloLog
+	Drop Rate: 0.998513
+	Throughput: 0.9993509946254352
+	Latency: 0.8861481790271798
+	Overall: 4.269835849992512
+Name: RingLocal
+	Drop Rate: 0.9987954
+	Throughput: 0.9828731658965678
+	Latency: 0.8890010407960449
+	Overall: 4.251107230436942
+Name: RingLog
+	Drop Rate: 1.0
+	Throughput: 0.9474730571366975
+	Latency: 0.8595249322222955
+	Overall: 4.140259450149637
+Name: LocalLog
+	Drop Rate: 0.9999642
+	Throughput: 1.0
+	Latency: 1.0
+	Overall: 4.4999642
