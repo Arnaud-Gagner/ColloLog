@@ -1,7 +1,7 @@
 # ColloLog
 C++ logging tool for multithreaded environment on Windows.
 
-The project is a work-in-progress.
+The project is a work-in-progress and was tested on Windows machine only.
 
 ## About Collineo
 
@@ -14,17 +14,9 @@ Link to our [website][1] and to our [LinkedIn][2]
 
 ## TODO
 
-> Elements are classified in no particular order
-
-- NaiveLogger (baseline logger)
-- Thread-local logger
-- Async logger
-- Zero-Allocation logger
-- Local zero-allocation logger
-- Lock-free & zero-allocation logger
-- Async/lock-free/zero-allocation logger without ring buffers
-- Async/lock-free/zero-allocation logger
-- Benchmarks
+- Flush at critical error
+- Redo ring buffers
+- Thread pool own project
 - Regression tests
 
 ## Contributions
