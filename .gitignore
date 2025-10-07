@@ -33,7 +33,7 @@
 *.app
 
 # ---- CMake ----
-build/*
+build
 
 # ---- Logs -----
 *.log

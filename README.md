@@ -14,6 +14,7 @@ Link to our [website][1] and to our [LinkedIn][2]
 
 ## TODO
 
+- Create documentation!
 - Flush at critical error
 - Redo ring buffers
 - Thread pool own project
