@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15...3.32)
 
-project(ColloLog LANGUAGES CXX)
+project(ColloLog VERSION 0.2.0 LANGUAGES CXX)
 
 set (SOURCES
     src/ColloEnums.cpp
@@ -11,16 +11,13 @@ set (SOURCES
     src/RingLocal.cpp
     src/RingLogger.cpp
     src/ThreadPool.cpp
-    src/main.cpp
-    benchmark/benchmarks.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 target_include_directories(${PROJECT_NAME}
-    PRIVATE
+    PUBLIC
         ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_SOURCE_DIR}/benchmark
 )
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
