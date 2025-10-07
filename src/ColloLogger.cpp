@@ -1,8 +1,8 @@
 #include "ColloLogger.h"
 
-#include <ctime>
-#include <cstring>
 #include <charconv>
+#include <cstring>
+#include <ctime>
 #include <iostream>
 
 #include "ThreadPool.h"
@@ -10,8 +10,10 @@
 extern ThreadPool pool;
 
 ColloLogger::ColloLogger(const std::string& filePath)
-    : mFilePath{ filePath }, mAppendIndex{},
-    mWriteIndex{}, mLevel{ LogLevel::debug }
+  : mFilePath{ filePath }
+  , mAppendIndex{}
+  , mWriteIndex{}
+  , mLevel{ LogLevel::debug }
 {
     memset(mBuffer1, 0, BufferSize);
     memset(mBuffer2, 0, BufferSize);
@@ -23,7 +25,7 @@ ColloLogger::ColloLogger(const std::string& filePath)
 ColloLogger::~ColloLogger()
 {
     swapBuffers();
-    pool.addTask([this]{ write(); });
+    pool.addTask([this] { write(); });
     std::this_thread::sleep_for(std::chrono::seconds(2));
     if (mFile.is_open()) {
         mFile.close();
@@ -44,7 +46,7 @@ void ColloLogger::addCrit(const char* msg)
         swapBuffers();
         addLog(msgSize, msg, crit);
         mLock.unlock();
-        pool.addTask([this]{ write(); });
+        pool.addTask([this] { write(); });
     }
     else {
         addLog(msgSize, msg, crit);
@@ -54,8 +56,10 @@ void ColloLogger::addCrit(const char* msg)
 
 void ColloLogger::addDebug(const char* msg)
 {
-    if (mLevel > debug) { return; }
-    
+    if (mLevel > debug) {
+        return;
+    }
+
     size_t msgSize = strlen(msg);
     mLock.lock();
 
@@ -63,7 +67,7 @@ void ColloLogger::addDebug(const char* msg)
         swapBuffers();
         addLog(msgSize, msg, debug);
         mLock.unlock();
-        pool.addTask([this]{ write(); });
+        pool.addTask([this] { write(); });
     }
     else {
         addLog(msgSize, msg, debug);
@@ -73,7 +77,9 @@ void ColloLogger::addDebug(const char* msg)
 
 void ColloLogger::addInfo(const char* msg)
 {
-    if (mLevel > info) { return; }
+    if (mLevel > info) {
+        return;
+    }
 
     size_t msgSize = strlen(msg);
     mLock.lock();
@@ -82,7 +88,7 @@ void ColloLogger::addInfo(const char* msg)
         swapBuffers();
         addLog(msgSize, msg, info);
         mLock.unlock();
-        pool.addTask([this]{ write(); });
+        pool.addTask([this] { write(); });
     }
     else {
         addLog(msgSize, msg, info);
@@ -92,7 +98,9 @@ void ColloLogger::addInfo(const char* msg)
 
 void ColloLogger::addWarn(const char* msg)
 {
-    if (mLevel > warn) { return; }
+    if (mLevel > warn) {
+        return;
+    }
 
     size_t msgSize = strlen(msg);
     mLock.lock();
@@ -101,7 +109,7 @@ void ColloLogger::addWarn(const char* msg)
         swapBuffers();
         addLog(msgSize, msg, warn);
         mLock.unlock();
-        pool.addTask([this]{ write(); });
+        pool.addTask([this] { write(); });
     }
     else {
         addLog(msgSize, msg, warn);
@@ -112,13 +120,14 @@ void ColloLogger::addWarn(const char* msg)
 void ColloLogger::addLog(const size_t size, const char* msg, const LogLevel& lvl)
 {
     char* message = mAppendBuffer + mAppendIndex;
-    std::to_chars_result result = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
+    std::to_chars_result result
+      = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
     message = result.ptr;
 
     const char* level = levelToCString(lvl);
     std::memcpy(message, level, LevelSize);
     message += LevelSize;
-    
+
     std::memcpy(message, msg, size);
     message += size;
 

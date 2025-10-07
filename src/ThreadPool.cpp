@@ -7,7 +7,8 @@ ThreadPool::ThreadPool(unsigned int nThreads)
     mIsRunning = true;
     mNumThread = nThreads;
     assert(mNumThread < std::thread::hardware_concurrency()
-        && "ThreadPool: the number of thread allocated in the pool exceeds the number of available thread by the hardware.");
+           && "ThreadPool: the number of thread allocated in the pool exceeds the number "
+              "of available thread by the hardware.");
 
     for (unsigned int i = 0; i < mNumThread; i++) {
         mThreads.emplace_back(std::thread(&ThreadPool::threadLoop, this));
@@ -44,13 +45,11 @@ void ThreadPool::stop()
 
 void ThreadPool::threadLoop()
 {
-    while(mIsRunning) {
+    while (mIsRunning) {
         std::function<void()> task;
         {
             std::unique_lock<std::mutex> lock(mTaskLock);
-            mTaskNotifier.wait(lock, [this] {
-                return !mTasks.empty() || !mIsRunning;
-            });
+            mTaskNotifier.wait(lock, [this] { return !mTasks.empty() || !mIsRunning; });
             if (!mTasks.empty()) {
                 task = std::move(mTasks.front());
                 mTasks.pop();

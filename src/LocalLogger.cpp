@@ -17,7 +17,7 @@ thread_local unsigned int LocalLogger::mWriteIndex = 0;
 thread_local LogLevel LocalLogger::mLevel = debug;
 
 LocalLogger::LocalLogger(const std::string& filepath)
-    : mFilePath{ filepath }
+  : mFilePath{ filepath }
 {
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
@@ -49,7 +49,9 @@ void LocalLogger::addCrit(const char* msg)
 
 void LocalLogger::addDebug(const char* msg)
 {
-    if (debug < mLevel) { return; }
+    if (debug < mLevel) {
+        return;
+    }
 
     size_t msgSize = strlen(msg);
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
@@ -60,7 +62,9 @@ void LocalLogger::addDebug(const char* msg)
 
 void LocalLogger::addInfo(const char* msg)
 {
-    if (debug < mLevel) { return; }
+    if (debug < mLevel) {
+        return;
+    }
 
     size_t msgSize = strlen(msg);
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
@@ -71,7 +75,9 @@ void LocalLogger::addInfo(const char* msg)
 
 void LocalLogger::addWarn(const char* msg)
 {
-    if (warn < mLevel) { return; }
+    if (warn < mLevel) {
+        return;
+    }
 
     size_t msgSize = strlen(msg);
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
@@ -81,15 +87,16 @@ void LocalLogger::addWarn(const char* msg)
 }
 
 void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lvl)
-{    
+{
     char* message = mAppendBuffer + mAppendIndex;
-    std::to_chars_result result = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
+    std::to_chars_result result
+      = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
     message = result.ptr;
 
     const char* level = levelToCString(lvl);
     std::memcpy(message, level, LevelSize);
     message += LevelSize;
-    
+
     std::memcpy(message, msg, size);
     message += size;
     *message++ = '\n';

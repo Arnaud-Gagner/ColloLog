@@ -28,7 +28,6 @@ private:
     std::condition_variable mTaskNotifier;
 
     std::vector<std::thread> mThreads;
-
 };
 
 #endif // !THREAD_POOL_H

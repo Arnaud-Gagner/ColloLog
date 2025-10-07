@@ -3,8 +3,11 @@
 #include <iostream>
 
 RingBuffer::RingBuffer(const size_t& size, const std::string& filePath)
-    : mMaxSize{ size }, mHead{}, mTail{},
-    mIsFull{}, mFilePath{ filePath }
+  : mMaxSize{ size }
+  , mHead{}
+  , mTail{}
+  , mIsFull{}
+  , mFilePath{ filePath }
 {
     mFile.open(mFilePath, std::ios::app);
 }

@@ -9,7 +9,7 @@ enum LogLevel {
     crit = 3,
     warn = 2,
 };
-    
+
 std::string levelToString(const LogLevel& lvl);
 const char* levelToCString(const LogLevel& lvl);
 

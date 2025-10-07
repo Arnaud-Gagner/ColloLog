@@ -2,9 +2,9 @@
 #define RING_BUFFER_H
 
 #include <fstream>
+#include <mutex>
 #include <string>
 #include <vector>
-#include <mutex>
 
 class RingBuffer
 {
