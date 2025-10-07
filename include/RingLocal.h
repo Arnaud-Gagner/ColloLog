@@ -10,7 +10,7 @@
 class RingLocal
 {
 public:
-    RingLocal(const std::string& filePath, const size_t& size = RingBuffer::DefaultSize);
+    RingLocal(const std::string& filePath);
     ~RingLocal();
 
     void setLogLevel(const LogLevel& lvl);

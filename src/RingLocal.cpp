@@ -10,7 +10,7 @@ extern ThreadPool pool;
 
 thread_local RingBuffer RingLocal::mBuffer(25,"../ColloLog/Logs/test.log");
 
-RingLocal::RingLocal(const std::string& filePath, const size_t& size)
+RingLocal::RingLocal(const std::string& filePath)
     : mFilePath{ filePath }, mLevel{ debug }
 {
     mFile.open(mFilePath, std::ios::trunc);
