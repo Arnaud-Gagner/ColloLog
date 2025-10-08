@@ -7,11 +7,11 @@
 #include <string>
 #include <thread>
 
-#include "ColloLogger.h"
-#include "LocalLogger.h"
-#include "NaiveLogger.h"
-#include "RingLocal.h"
-#include "RingLogger.h"
+#include <ColloLog/ColloLogger.h>
+#include <ColloLog/LocalLogger.h>
+#include <ColloLog/NaiveLogger.h>
+#include <ColloLog/RingLocal.h>
+#include <ColloLog/RingLogger.h>
 
 const unsigned int Iterations = 10;
 const int MessagesPerThread = 1000000;
