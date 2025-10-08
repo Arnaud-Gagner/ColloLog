@@ -17,6 +17,7 @@ Link to our [website][1] and to our [LinkedIn][2]
 - Create documentation!
 - Flush at critical error
 - Redo ring buffers
+- Redo benchmarks
 - Thread pool own project
 - Regression tests
 
