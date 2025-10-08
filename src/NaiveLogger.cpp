@@ -1,4 +1,4 @@
-#include "NaiveLogger.h"
+#include "ColloLog/NaiveLogger.h"
 
 #include <cassert>
 #include <chrono>

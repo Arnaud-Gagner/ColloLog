@@ -1,8 +1,8 @@
-#include "LocalLogger.h"
+#include "ColloLog/LocalLogger.h"
 
 #include <charconv>
 
-#include "ThreadPool.h"
+#include "ColloLog/ThreadPool.h"
 
 extern ThreadPool pool;
 

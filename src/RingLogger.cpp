@@ -1,10 +1,10 @@
-#include "RingLogger.h"
+#include "ColloLog/RingLogger.h"
 
 #include <cassert>
 #include <charconv>
 #include <iostream>
 
-#include "RingBuffer.h"
+#include "ColloLog/RingBuffer.h"
 
 RingLogger::RingLogger(const std::string& filePath, const size_t& size)
   : mBuffer(size, filePath)

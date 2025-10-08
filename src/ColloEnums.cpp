@@ -1,4 +1,4 @@
-#include "ColloEnums.h"
+#include "ColloLog/ColloEnums.h"
 
 std::string levelToString(const LogLevel& lvl)
 {

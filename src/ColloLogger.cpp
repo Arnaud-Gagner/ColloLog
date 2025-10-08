@@ -1,11 +1,11 @@
-#include "ColloLogger.h"
+#include "ColloLog/ColloLogger.h"
 
 #include <charconv>
 #include <cstring>
 #include <ctime>
 #include <iostream>
 
-#include "ThreadPool.h"
+#include "ColloLog/ThreadPool.h"
 
 extern ThreadPool pool;
 

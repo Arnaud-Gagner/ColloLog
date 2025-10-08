@@ -1,10 +1,10 @@
-#include "RingLocal.h"
+#include "ColloLog/RingLocal.h"
 
 #include <cassert>
 #include <charconv>
 #include <iostream>
 
-#include "ThreadPool.h"
+#include "ColloLog/ThreadPool.h"
 
 extern ThreadPool pool;
 
