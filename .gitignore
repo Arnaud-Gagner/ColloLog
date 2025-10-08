@@ -32,6 +32,8 @@
 *.out
 *.app
 
+*.pdb
+
 # ---- CMake ----
 build
 
