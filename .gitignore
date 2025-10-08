@@ -42,3 +42,6 @@ build
 
 # ---- VS Code ----
 .vscode/
+
+# ---- Misc ----
+.txt
