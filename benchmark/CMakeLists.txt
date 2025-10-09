@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15...3.32)
+cmake_minimum_required(VERSION 3.15)
 
 project(ColloLogBench VERSION 0.2.0 LANGUAGES CXX)
 
