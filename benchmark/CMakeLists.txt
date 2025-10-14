@@ -5,11 +5,17 @@ project(ColloLogBench VERSION 0.2.0 LANGUAGES CXX)
 find_package(ColloLog CONFIG REQUIRED)
 
 set(SOURCES
-    benchmarks.cpp
-    main.cpp
+    src/NaiveLogger.cpp
+    src/benchmarks.cpp
+    src/main.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE

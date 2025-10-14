@@ -9,9 +9,10 @@
 
 #include <ColloLog/ColloLogger.h>
 #include <ColloLog/LocalLogger.h>
-#include <ColloLog/NaiveLogger.h>
 #include <ColloLog/RingLocal.h>
 #include <ColloLog/RingLogger.h>
+
+#include "NaiveLogger.h"
 
 const unsigned int Iterations = 10;
 const int MessagesPerThread = 1000000;

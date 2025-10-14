@@ -8,7 +8,6 @@ set (SOURCES
     src/ColloEnums.cpp
     src/ColloLogger.cpp
     src/LocalLogger.cpp
-    src/NaiveLogger.cpp
     src/RingBuffer.cpp
     src/RingLocal.cpp
     src/RingLogger.cpp

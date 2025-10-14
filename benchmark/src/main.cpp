@@ -30,7 +30,7 @@ void copyFile(const std::string& source, const std::string& destination)
 
 void dropRate()
 {
-    long long executionTime = runDropRateBenchmark(5);
+    runDropRateBenchmark(5);
     std::cout << "Finished drop log";
     std::string path = VersionDir + "drop_rate.log";
     copyFile(TempLogFile, path.c_str());
