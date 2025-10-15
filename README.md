@@ -11,16 +11,23 @@ ColloLog is a lightweight, high-performance C++ logging library designed for mul
 ## Why use ColloLog?
 
 `ColloLog` is designed for general-purpose and performance logging in multithreaded environments. It offers:
+
 - Plain text output (for readability)
+
 - Timestamps (program's runtime timer for efficiency)
+
 - Static format (for optimization)
 
 **For single-threaded projects**, ``ColloLog`` is still highly performant by offering a throughput of **11'5000'000 logs/s** which is the fastest plain-text logger I know of.
 
 ### So when to use this tool?
+
 - High-performance systems
+
 - Multithreaded or concurrent systems
+
 - Benchmarking
+
 - Low disk foot-print requirements
 
 ## Adapting to your project
@@ -28,11 +35,15 @@ ColloLog is a lightweight, high-performance C++ logging library designed for mul
 `ColloLog` provides two logger variants, optimized for different threading models:
 
 - `ColloLogger`: highly performant for **few threads** (1-3)
+
 - `LocalLogger`: highly performant for **multiple threads** (4+)
 
 **Throughput example:** Logs were automatically flushed to disk by the tool and messages were static.
+
 - [1 thread] `ColloLogger`: 15'000'000 logs/s
+
 - [2 threads] `ColloLogger`: 14'800'000 logs/s
+
 - [8 threads] `LocalLogger`: 11'000'000 logs/s
 
 > :exclamation: Benchmarks were run on an Intel i7-13620H (13th gen), 32GB RAM.
@@ -49,6 +60,37 @@ Link to our [website][1] and to our [LinkedIn][2]
 [2]: https://ca.linkedin.com/company/collineo-inc
 
 ---
+
+## Installation
+
+- In the root folder of your project, create a folder named `external` and change to that directory.
+
+- Add the library as a submodule:
+
+```bash
+git submodule add -b main https://github.com/Arnaud-Gagner/ColloLog.git ColloLog
+```
+
+- Update the library:
+
+```bash
+git submodule update --init --recursive
+```
+
+- Build the library:
+
+```bash
+mkdir ColloLog/build;
+cd ColloLog/build;
+cmake .. -DCMAKE_BUILD_TYPE=Release;
+cmake --build . --config Release;
+cmake --install . --prefix install --config Release;
+cmake .. -DCMAKE_BUILD_TYPE=Debug;
+cmake --build . --config Debug;
+cmake --install . --prefix install --config Debug;
+```
+
+- Link it with your build setup
 
 ## Integrating to your projects
 
@@ -87,8 +129,11 @@ ColloLogger userLogger("path/to/user/logs");
 Here is the list of priorities with the logging method associated with it in from most to least prioritized:
 
 - `crit` called with `addCrit()`
+
 - `warn` called with `addWarn()`
+
 - `info` called with `addInfo()`
+
 - `debug` called with `addDebug()`
 
 Here is an example of logging with different priority levels.
@@ -110,11 +155,29 @@ void foo() {
 
 ---
 
+## How to run benchmarks
+
+Change the paths in `benchmark/src/main.cpp` and change the logger in `runLongBenchmark()` inside `benchmark/src/benchmarks.cpp` as you want.
+
+> *More flexibility will be added later. This clearly not an ideal setup*. 
+
+Before running benchmarks, close unnecessary programs, disable power saving and remove temporary files.
+
+Then, use thoses commands:
+
+```bash
+cd ../benchmark
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../install
+cmake --build build --config Release
+build/Release/ColloLogBench.exe
+```
+
+---
+
 ## Roadmap
 
 - Create documentation
     - installation
-    - usage
     - running benchmarks
 - Implement log flushing on critical errors
 - Revamp ring buffer implementation
