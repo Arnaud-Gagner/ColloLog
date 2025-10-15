@@ -5,14 +5,14 @@
 #include <mutex>
 #include <thread>
 
-#include "ColloEnums.h"
+#include <ColloLog/ColloEnums.h>
 
 class NaiveLogger
 {
 public:
     NaiveLogger(const std::string& filePath);
     ~NaiveLogger();
-    
+
     void setLogLevel(const LogLevel& lvl);
 
     void addCrit(const std::string& msg);
@@ -35,7 +35,6 @@ private:
 
     LogLevel mLevel;
     std::mutex mLock;
-
 };
 
 #endif // !NAIVE_LOGGER_H

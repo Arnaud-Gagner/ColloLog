@@ -32,11 +32,19 @@
 *.out
 *.app
 
+*.pdb
+
+# ---- installation ----
+install
+
 # ---- CMake ----
-build/*
+build
 
 # ---- Logs -----
 *.log
 
 # ---- VS Code ----
-.vscode/
+.vscode
+
+# ---- Misc ----
+.txt

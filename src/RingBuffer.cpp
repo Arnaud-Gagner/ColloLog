@@ -1,16 +1,20 @@
-#include "RingBuffer.h"
+#include "ColloLog/RingBuffer.h"
 
 #include <iostream>
 
 RingBuffer::RingBuffer(const size_t& size, const std::string& filePath)
-    : mMaxSize{ size }, mHead{}, mTail{},
-    mIsFull{}, mFilePath{ filePath }
+  : mMaxSize{ size }
+  , mHead{}
+  , mTail{}
+  , mIsFull{}
+  , mFilePath{ filePath }
 {
-    mFile.open(mFilePath, std::ios::app | std::ios::trunc);
+    mFile.open(mFilePath, std::ios::app);
 }
 
 RingBuffer::~RingBuffer()
 {
+    flush();
     if (mFile.is_open()) {
         mFile.close();
     }
@@ -29,10 +33,14 @@ void RingBuffer::append(const char* message)
 
     mHead = (mHead + 1) % mMaxSize;
     mIsFull = mHead == mTail;
+    if (isFull()) {
+        flush();
+    }
 }
 
 void RingBuffer::flush()
 {
+    std::unique_lock<std::mutex> lock(mLock);
     size_t index = mTail;
     for (int i{}; i < mMaxSize; i++) {
         mFile << mBuffer[index];
@@ -44,6 +52,7 @@ void RingBuffer::flush()
 
 void RingBuffer::flushTail()
 {
+    std::unique_lock<std::mutex> lock(mLock);
     mFile << mBuffer[mTail];
     mTail = (mTail + mIsFull) % mMaxSize;
 }

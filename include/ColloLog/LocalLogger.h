@@ -5,7 +5,7 @@
 #include <mutex>
 #include <thread>
 
-#include "ColloEnums.h"
+#include "Levels.h"
 
 class LocalLogger
 {
@@ -20,13 +20,15 @@ public:
     void addInfo(const char* msg);
     void addWarn(const char* msg);
 
+    void flush();
+
 private:
     void addLog(const size_t& size, const char* msg, const LogLevel& lvl);
     void swapBuffers();
     void write(const char* data, const size_t size);
 
 private:
-    static const size_t BufferSize = 1024;
+    static const size_t BufferSize = 100 * 1024;
     static constexpr size_t MinimalLogSize = 27;
     static constexpr size_t LevelSize = 6;
     static constexpr size_t TimeSize = 20;

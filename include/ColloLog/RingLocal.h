@@ -1,7 +1,7 @@
 #ifndef RING_LOCAL_H
 #define RING_LOCAL_H
 
-#include "ColloEnums.h"
+#include "Levels.h"
 #include "RingBuffer.h"
 
 #include <fstream>
@@ -10,7 +10,7 @@
 class RingLocal
 {
 public:
-    RingLocal(const std::string& filePath, const size_t& size = RingBuffer::DefaultSize);
+    RingLocal(const std::string& filePath);
     ~RingLocal();
 
     void setLogLevel(const LogLevel& lvl);

@@ -1,19 +1,17 @@
-#include "RingLogger.h"
+#include "ColloLog/RingLogger.h"
 
+#include <cassert>
 #include <charconv>
 #include <iostream>
-#include <cassert>
 
-#include "RingBuffer.h"
+#include "ColloLog/RingBuffer.h"
 
 RingLogger::RingLogger(const std::string& filePath, const size_t& size)
-    : mBuffer(size, filePath), mLevel{ debug }
-{
-}
+  : mBuffer(size, filePath)
+  , mLevel{ debug }
+{}
 
-RingLogger::~RingLogger()
-{
-}
+RingLogger::~RingLogger() {}
 
 void RingLogger::setLogLevel(const LogLevel& lvl)
 {
@@ -23,19 +21,20 @@ void RingLogger::setLogLevel(const LogLevel& lvl)
 void RingLogger::addCrit(const char* msg)
 {
     size_t size = strlen(msg);
-    
+
     assert(size + MinimalLogSize > RingBuffer::MaxElementSize
-        && "ColloLog::RingLogger Buffer overflow due to too big message.");
+           && "ColloLog::RingLogger Buffer overflow due to too big message.");
 
     char message[RingBuffer::MaxElementSize];
     char* messageIndex = message;
-    std::to_chars_result result = std::to_chars(messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
+    std::to_chars_result result = std::to_chars(
+      messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
     messageIndex = result.ptr;
 
     const char* level = levelToCString(crit);
     std::memcpy(messageIndex, level, LevelSize);
     messageIndex += LevelSize;
-    
+
     std::memcpy(messageIndex, msg, size);
     messageIndex += size;
 
@@ -45,21 +44,24 @@ void RingLogger::addCrit(const char* msg)
 
 void RingLogger::addDebug(const char* msg)
 {
-    if (mLevel > debug) { return; }
+    if (mLevel > debug) {
+        return;
+    }
     size_t size = strlen(msg);
-    
+
     assert(size + MinimalLogSize > RingBuffer::MaxElementSize
-        && "ColloLog::RingLogger Buffer overflow due to too big message.");
+           && "ColloLog::RingLogger Buffer overflow due to too big message.");
 
     char message[RingBuffer::MaxElementSize];
     char* messageIndex = message;
-    std::to_chars_result result = std::to_chars(messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
+    std::to_chars_result result = std::to_chars(
+      messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
     messageIndex = result.ptr;
 
     const char* level = levelToCString(debug);
     std::memcpy(messageIndex, level, LevelSize);
     messageIndex += LevelSize;
-    
+
     std::memcpy(messageIndex, msg, size);
     messageIndex += size;
 
@@ -69,21 +71,24 @@ void RingLogger::addDebug(const char* msg)
 
 void RingLogger::addInfo(const char* msg)
 {
-    if (mLevel > info) { return; }
+    if (mLevel > info) {
+        return;
+    }
     size_t size = strlen(msg);
-    
+
     assert(size + MinimalLogSize > RingBuffer::MaxElementSize
-        && "ColloLog::RingLogger Buffer overflow due to too big message.");
+           && "ColloLog::RingLogger Buffer overflow due to too big message.");
 
     char message[RingBuffer::MaxElementSize];
     char* messageIndex = message;
-    std::to_chars_result result = std::to_chars(messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
+    std::to_chars_result result = std::to_chars(
+      messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
     messageIndex = result.ptr;
 
     const char* level = levelToCString(info);
     std::memcpy(messageIndex, level, LevelSize);
     messageIndex += LevelSize;
-    
+
     std::memcpy(messageIndex, msg, size);
     messageIndex += size;
 
@@ -93,21 +98,24 @@ void RingLogger::addInfo(const char* msg)
 
 void RingLogger::addWarn(const char* msg)
 {
-    if (mLevel > warn) { return; }
+    if (mLevel > warn) {
+        return;
+    }
     size_t size = strlen(msg);
-    
+
     assert(size + MinimalLogSize > RingBuffer::MaxElementSize
-        && "ColloLog::RingLogger Buffer overflow due to too big message.");
+           && "ColloLog::RingLogger Buffer overflow due to too big message.");
 
     char message[RingBuffer::MaxElementSize];
     char* messageIndex = message;
-    std::to_chars_result result = std::to_chars(messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
+    std::to_chars_result result = std::to_chars(
+      messageIndex, messageIndex + TimeSize, static_cast<int>(std::clock()));
     messageIndex = result.ptr;
 
     const char* level = levelToCString(warn);
     std::memcpy(messageIndex, level, LevelSize);
     messageIndex += LevelSize;
-    
+
     std::memcpy(messageIndex, msg, size);
     messageIndex += size;
 
@@ -117,14 +125,8 @@ void RingLogger::addWarn(const char* msg)
 
 void RingLogger::addLog(const char* msg)
 {
-    std::unique_lock<std::mutex> lock(mLocker);
-    mBuffer.append(msg);
-    if (mBuffer.isFull()) {
-        mBuffer.flush();
+    while (mAddingFlag.test_and_set(std::memory_order_acquire)) {
     }
-}
-
-void RingLogger::write()
-{
-    mBuffer.flushTail();
+    mBuffer.append(msg);
+    mAddingFlag.clear(std::memory_order_release);
 }

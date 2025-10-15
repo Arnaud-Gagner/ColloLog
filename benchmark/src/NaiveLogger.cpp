@@ -7,7 +7,9 @@
 #include <string>
 
 NaiveLogger::NaiveLogger(const std::string& filepath)
-    : mFilePath{ filepath }, mCurrentIndex{}, mLevel{ debug }
+  : mFilePath{ filepath }
+  , mCurrentIndex{}
+  , mLevel{ debug }
 {
     mFile.open(mFilePath, std::ios::trunc);
     mFile.close();
@@ -30,43 +32,49 @@ void NaiveLogger::setLogLevel(const LogLevel& lvl)
 
 void NaiveLogger::addCrit(const std::string& msg)
 {
-    auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-    std::string message{
-        '[' + std::to_string(dateTime.time_since_epoch().count()) + ']' + levelToString(crit) + " " + msg + '\n'
-    };
+    auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+    std::string message{ '[' + std::to_string(dateTime.time_since_epoch().count()) + ']'
+                         + levelToString(crit) + " " + msg + '\n' };
     addLog(message);
 }
 
 void NaiveLogger::addDebug(const std::string& msg)
 {
-    if (mLevel > debug) { return; }
+    if (mLevel > debug) {
+        return;
+    }
 
-    auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-    std::string message{
-        '[' + std::to_string(dateTime.time_since_epoch().count()) + ']' + levelToString(debug) + " " + msg + '\n'
-    };
+    auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+    std::string message{ '[' + std::to_string(dateTime.time_since_epoch().count()) + ']'
+                         + levelToString(debug) + " " + msg + '\n' };
     addLog(message);
 }
 
 void NaiveLogger::addInfo(const std::string& msg)
 {
-    if (mLevel > info) { return; }
+    if (mLevel > info) {
+        return;
+    }
 
-    auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-    std::string message{
-        '[' + std::to_string(dateTime.time_since_epoch().count()) + ']' + levelToString(info) + " " + msg + '\n'
-    };
+    auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+    std::string message{ '[' + std::to_string(dateTime.time_since_epoch().count()) + ']'
+                         + levelToString(info) + " " + msg + '\n' };
     addLog(message);
 }
 
 void NaiveLogger::addWarn(const std::string& msg)
 {
-    if (mLevel > warn) { return; }
-    
-    auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-    std::string message{
-        '[' + std::to_string(dateTime.time_since_epoch().count()) + ']' + levelToString(warn) + " " + msg + '\n'
-    };
+    if (mLevel > warn) {
+        return;
+    }
+
+    auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+    std::string message{ '[' + std::to_string(dateTime.time_since_epoch().count()) + ']'
+                         + levelToString(warn) + " " + msg + '\n' };
     addLog(message);
 }
 
@@ -80,7 +88,7 @@ void NaiveLogger::addLog(const std::string& msg)
     if (BufferSize < mCurrentIndex) {
         assert(("Log message exceeds buffer size"));
     }
-    
+
     std::memcpy(mBuffer + mCurrentIndex, msg.c_str(), messageSize);
     mCurrentIndex += static_cast<int>(messageSize);
     mLock.unlock();
