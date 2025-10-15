@@ -94,7 +94,7 @@ Here is the list of priorities with the logging method associated with it in fro
 Here is an example of logging with different priority levels.
 
 ```c
-#include <ColloLog/ColloEnums>
+#include <ColloLog/Levels.h>
 void foo() {
     logger.setLevel(LogLevel::critical)
     logger.addInfo("non-critical message");   // won't be saved
