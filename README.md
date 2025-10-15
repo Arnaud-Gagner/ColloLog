@@ -126,4 +126,4 @@ void foo() {
 
 ## Contributions
 
-At this time, ColloLog is not accepting external contributions, but we welcome feedback and suggestions!
+At this time, ColloLog is not accepting external contributions, but feel free to publish issues!
