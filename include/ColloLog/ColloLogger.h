@@ -20,6 +20,8 @@ public:
     void addInfo(const char* msg);
     void addWarn(const char* msg);
 
+    void flush();
+    
 private:
     static constexpr size_t BufferSize = 100 * 1024;
     static constexpr size_t MinimalLogSize = 27;

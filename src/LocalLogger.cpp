@@ -86,6 +86,11 @@ void LocalLogger::addWarn(const char* msg)
     addLog(msgSize, msg, warn);
 }
 
+void LocalLogger::flush()
+{
+    swapBuffers();
+}
+
 void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lvl)
 {
     char* message = mAppendBuffer + mAppendIndex;
