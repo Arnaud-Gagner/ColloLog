@@ -4,7 +4,7 @@
 #include <fstream>
 #include <mutex>
 
-#include "ColloEnums.h"
+#include "Levels.h"
 
 // TODO: lock-free
 class ColloLogger

@@ -5,7 +5,7 @@
 #include <mutex>
 #include <thread>
 
-#include "ColloEnums.h"
+#include "Levels.h"
 
 class LocalLogger
 {

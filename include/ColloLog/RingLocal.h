@@ -1,7 +1,7 @@
 #ifndef RING_LOCAL_H
 #define RING_LOCAL_H
 
-#include "ColloEnums.h"
+#include "Levels.h"
 #include "RingBuffer.h"
 
 #include <fstream>
