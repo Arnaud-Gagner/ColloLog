@@ -8,7 +8,7 @@
 class ThreadPool
 {
 public:
-    explicit ThreadPool(unsigned int nThreads);
+    explicit ThreadPool(unsigned int nThreads = 1);
     ~ThreadPool();
 
     void addTask(const std::function<void()>& task);
