@@ -140,6 +140,7 @@ Here is an example of logging with different priority levels.
 
 ```c
 #include <ColloLog/Levels.h>
+
 void foo() {
     logger.setLevel(LogLevel::critical)
     logger.addInfo("non-critical message");   // won't be saved
@@ -147,7 +148,6 @@ void foo() {
     // ...
     logger.setLevel(LogLevel::info);
     logger.addInfo("non-critical message");   // will be saved
-
 }
 ```
 
@@ -173,19 +173,6 @@ build/Release/ColloLogBench.exe
 ```
 
 ---
-
-## Roadmap
-
-- Create documentation
-    - installation
-    - running benchmarks
-- Implement log flushing on critical errors
-- Revamp ring buffer implementation
-- Redesign benchmarks
-- Choose between log clearing/keeping
-- Extract thread pool as a standalone project
-- Interface thread pool without run-time polymorphism
-- Add regression tests
 
 ## Contributions
 
