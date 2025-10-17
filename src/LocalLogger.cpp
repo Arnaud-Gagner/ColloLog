@@ -21,7 +21,7 @@ LocalLogger::LocalLogger(const std::string& filepath, FileOpen mode)
 {
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
-    
+
     switch (mode) {
         case FileOpen::Clear: {
             mFile.open(mFilePath, std::ios::trunc);

@@ -78,9 +78,10 @@ std::thread naiveDropRate(NaiveLogger& logger)
 
 long long runLongBenchmark(unsigned int nThreads)
 {
-    ColloLogger collo("Logs/test.log", OpenStrat::Clear);
+    ColloLogger collo("Logs/test.log", FileOpen::Clear);
     std::queue<std::thread> threads;
-    auto startTime = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now());
+    auto startTime = std::chrono::time_point_cast<std::chrono::microseconds>(
+      std::chrono::system_clock::now());
 
     for (unsigned i = 0; i < nThreads; ++i) {
         threads.push(std::move(colloTask(collo, FooWasCalledMessage)));
@@ -90,14 +91,18 @@ long long runLongBenchmark(unsigned int nThreads)
         threads.front().join();
         threads.pop();
     }
-    return (std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()) - startTime).count();
+    return (std::chrono::time_point_cast<std::chrono::microseconds>(
+              std::chrono::system_clock::now())
+            - startTime)
+      .count();
 }
 
 long long runDropRateBenchmark(unsigned int nThreads)
 {
-    ColloLogger collo("Logs/test.log", OpenStrat::Clear);
+    ColloLogger collo("Logs/test.log", FileOpen::Clear);
     std::queue<std::thread> threads;
-    auto startTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
+    auto startTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
 
     for (unsigned int i = 0; i < nThreads; ++i) {
         threads.push(std::move(colloDropRate(collo)));
@@ -107,5 +112,8 @@ long long runDropRateBenchmark(unsigned int nThreads)
         threads.front().join();
         threads.pop();
     }
-    return (std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()) - startTime).count();
+    return (std::chrono::time_point_cast<std::chrono::milliseconds>(
+              std::chrono::system_clock::now())
+            - startTime)
+      .count();
 }

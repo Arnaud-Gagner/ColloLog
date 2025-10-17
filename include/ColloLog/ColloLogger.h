@@ -20,7 +20,7 @@ public:
     void warn(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
 
     void flush();
-    
+
 private:
     static constexpr size_t BufferSize = 100 * 1024;
     static constexpr size_t MinimalLogSize = 27;
@@ -29,9 +29,10 @@ private:
 
 private:
     void addLog(const size_t size, const char* msg, const LogLevel& lvl);
-
-    void flushMessage(size_t size, const char* msg, LogLevel level);     // only this message gets flushed
-    void flushNow();        // avoid swapping buffers when need to flush now
+    // only this message gets flushed
+    void flushMessage(size_t size, const char* msg, LogLevel level);
+    // avoid swapping buffers when need to flush now
+    void flushNow();
     void swapBuffers();
     void write();
 

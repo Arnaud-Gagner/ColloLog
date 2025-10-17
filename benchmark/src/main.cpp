@@ -1,27 +1,27 @@
+#include <Windows.h>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <thread>
-#include <Windows.h>
 
 #include "benchmarks.h"
 #include <ColloLog/ThreadPool.h>
 
-ThreadPool pool(1);
+ThreadPool pool;
 const unsigned int MaxThreads = 10;
 const unsigned int Rounds = 10;
 const char* CsvFile = "D:/Iteration2/ColloLog/result.csv";
 const char* TempLogFile = "Logs/test.log";
 const std::string VersionDir = "D:/Iteration2/ColloLog/";
 
-// in benchmarks.cpp, change used version if wanted
-
 void copyFile(const std::string& source, const std::string& destination)
 {
     std::ifstream in(source, std::ios::binary);
     std::ofstream out(destination, std::ios::binary);
-    if (!in || !out) return;
+    if (!in || !out) {
+        return;
+    }
 
     out << in.rdbuf();
     out.close();
@@ -45,7 +45,7 @@ void allRoundsOfThread(const unsigned int nThreads)
         file.close();
 
         std::cout << "\n\tstarting round " << i;
-        
+
         FILETIME creationTime, exitTime, kernelTime, userTime;
         double cpuTime = 0.0;
 
