@@ -15,8 +15,6 @@ ColloLogger::ColloLogger(const std::string& filePath, FileOpen mode)
   , mWriteIndex{}
   , mLevel{ LogLevel::Debug }
 {
-    memset(mBuffer1, 0, BufferSize);
-    memset(mBuffer2, 0, BufferSize);
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
 
@@ -77,19 +75,19 @@ void ColloLogger::debug(const char* msg, FlushStrat strat)
 
     switch (strat) {
         case FlushStrat::AutoAsync: {
-            autoAsyncFlush(msg, LogLevel::Crit);
+            autoAsyncFlush(msg, LogLevel::Debug);
             break;
         }
         case FlushStrat::AutoSameThread: {
-            autoSameThreadFlush(msg, LogLevel::Crit);
+            autoSameThreadFlush(msg, LogLevel::Debug);
             break;
         }
         case FlushStrat::ManualAsync: {
-            manualAsyncFlush(msg, LogLevel::Crit);
+            manualAsyncFlush(msg, LogLevel::Debug);
             break;
         }
         default: {
-            manualSameThreadFlush(msg, LogLevel::Crit);
+            manualSameThreadFlush(msg, LogLevel::Debug);
             break;
         }
     }
@@ -103,19 +101,19 @@ void ColloLogger::info(const char* msg, FlushStrat strat)
 
     switch (strat) {
         case FlushStrat::AutoAsync: {
-            autoAsyncFlush(msg, LogLevel::Crit);
+            autoAsyncFlush(msg, LogLevel::Info);
             break;
         }
         case FlushStrat::AutoSameThread: {
-            autoSameThreadFlush(msg, LogLevel::Crit);
+            autoSameThreadFlush(msg, LogLevel::Info);
             break;
         }
         case FlushStrat::ManualAsync: {
-            manualAsyncFlush(msg, LogLevel::Crit);
+            manualAsyncFlush(msg, LogLevel::Info);
             break;
         }
         default: {
-            manualSameThreadFlush(msg, LogLevel::Crit);
+            manualSameThreadFlush(msg, LogLevel::Info);
             break;
         }
     }
@@ -129,19 +127,19 @@ void ColloLogger::warn(const char* msg, FlushStrat strat)
 
     switch (strat) {
         case FlushStrat::AutoAsync: {
-            autoAsyncFlush(msg, LogLevel::Crit);
+            autoAsyncFlush(msg, LogLevel::Warn);
             break;
         }
         case FlushStrat::AutoSameThread: {
-            autoSameThreadFlush(msg, LogLevel::Crit);
+            autoSameThreadFlush(msg, LogLevel::Warn);
             break;
         }
         case FlushStrat::ManualAsync: {
-            manualAsyncFlush(msg, LogLevel::Crit);
+            manualAsyncFlush(msg, LogLevel::Warn);
             break;
         }
         default: {
-            manualSameThreadFlush(msg, LogLevel::Crit);
+            manualSameThreadFlush(msg, LogLevel::Warn);
             break;
         }
     }
@@ -181,7 +179,7 @@ void ColloLogger::swapBuffers()
 void ColloLogger::flushNow()
 {
     std::unique_lock<std::mutex> lock(mFileLock);
-    mFile << mAppendBuffer;
+    mFile.write(mAppendBuffer, mAppendIndex);
     mAppendIndex = 0;
 }
 
@@ -208,12 +206,13 @@ void ColloLogger::flushMessage(size_t size, const char* msg, LogLevel level)
 void ColloLogger::write()
 {
     std::unique_lock<std::mutex> lock(mFileLock);
-    mFile << mWriteBuffer;
+    mFile.write(mWriteBuffer, mWriteIndex);
+
 }
 
 void ColloLogger::autoAsyncFlush(const char* msg, LogLevel level)
 {
-    size_t msgSize = strlen(msg);
+    const size_t msgSize = std::strlen(msg);
     mLock.lock();
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
@@ -229,7 +228,7 @@ void ColloLogger::autoAsyncFlush(const char* msg, LogLevel level)
 
 void ColloLogger::autoSameThreadFlush(const char* msg, LogLevel level)
 {
-    size_t msgSize = strlen(msg);
+    const size_t msgSize = std::strlen(msg);
     std::unique_lock<std::mutex> lock(mLock);
 
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
@@ -240,7 +239,7 @@ void ColloLogger::autoSameThreadFlush(const char* msg, LogLevel level)
 
 void ColloLogger::manualAsyncFlush(const char* msg, LogLevel level)
 {
-    size_t msgSize = strlen(msg);
+    const size_t msgSize = std::strlen(msg);
     mLock.lock();
 
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
@@ -261,7 +260,7 @@ void ColloLogger::manualAsyncFlush(const char* msg, LogLevel level)
 
 void ColloLogger::manualSameThreadFlush(const char* msg, LogLevel level)
 {
-    size_t msgSize = strlen(msg);
+    const size_t msgSize = std::strlen(msg);
     std::unique_lock<std::mutex> lock(mLock);
 
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {

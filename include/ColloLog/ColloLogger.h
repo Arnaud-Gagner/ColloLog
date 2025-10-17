@@ -22,7 +22,7 @@ public:
     void flush();
 
 private:
-    static constexpr size_t BufferSize = 100 * 1024;
+    static constexpr size_t BufferSize = 8 * 1024;
     static constexpr size_t MinimalLogSize = 27;
     static constexpr size_t LevelSize = 6;
     static constexpr size_t TimeSize = 20;
@@ -45,8 +45,8 @@ private:
     std::ofstream mFile;
     std::string mFilePath;
 
-    char mBuffer1[BufferSize];
-    char mBuffer2[BufferSize];
+    alignas(64) char mBuffer1[BufferSize];
+    alignas(64) char mBuffer2[BufferSize];
     char* mAppendBuffer;
     char* mWriteBuffer;
 

@@ -7,20 +7,16 @@
 extern ThreadPool pool;
 
 thread_local char LocalLogger::mBuffer1[LocalLogger::BufferSize];
-thread_local char LocalLogger::mBuffer2[LocalLogger::BufferSize];
 
 thread_local char* LocalLogger::mAppendBuffer = LocalLogger::mBuffer1;
-thread_local char* LocalLogger::mWriteBuffer = LocalLogger::mBuffer2;
 
 thread_local unsigned int LocalLogger::mAppendIndex = 0;
-thread_local unsigned int LocalLogger::mWriteIndex = 0;
 thread_local LogLevel LocalLogger::mLevel = LogLevel::Debug;
 
 LocalLogger::LocalLogger(const std::string& filepath, FileOpen mode)
   : mFilePath{ filepath }
 {
     mAppendBuffer = mBuffer1;
-    mWriteBuffer = mBuffer2;
 
     switch (mode) {
         case FileOpen::Clear: {
@@ -103,7 +99,7 @@ void LocalLogger::info(const char* msg, FlushStrat strat)
         return;
     }
 
-    size_t msgSize = strlen(msg);
+    const size_t msgSize = strlen(msg);
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
     }
@@ -173,13 +169,8 @@ void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lv
 
 void LocalLogger::swapBuffers()
 {
-    std::swap(mAppendBuffer, mWriteBuffer);
-    mWriteIndex = mAppendIndex;
+    write(mAppendBuffer, mAppendIndex);
     mAppendIndex = 0;
-    const size_t size = mWriteIndex;
-    char* bufferCopy = new char[size];
-    std::memcpy(bufferCopy, mWriteBuffer, size);
-    write(bufferCopy, size);
 }
 
 void LocalLogger::write(const char* data, const size_t size)

@@ -28,7 +28,7 @@ private:
     void write(const char* data, const size_t size);
 
 private:
-    static const size_t BufferSize = 100 * 1024;
+    static const size_t BufferSize = 8 * 1024;
     static constexpr size_t MinimalLogSize = 27;
     static constexpr size_t LevelSize = 6;
     static constexpr size_t TimeSize = 20;
@@ -38,12 +38,9 @@ private:
     std::ofstream mFile;
 
     static thread_local char mBuffer1[BufferSize];
-    static thread_local char mBuffer2[BufferSize];
     static thread_local char* mAppendBuffer;
-    static thread_local char* mWriteBuffer;
 
     static thread_local unsigned int mAppendIndex;
-    static thread_local unsigned int mWriteIndex;
     static thread_local LogLevel mLevel;
 
     std::mutex mLock;
