@@ -6,9 +6,7 @@
 #include <thread>
 
 #include "benchmarks.h"
-#include <ColloLog/ThreadPool.h>
 
-ThreadPool pool;
 const unsigned int MaxThreads = 10;
 const unsigned int Rounds = 10;
 const char* CsvFile = "D:/Iteration2/ColloLog/result.csv";
@@ -39,11 +37,8 @@ void dropRate()
 void allRoundsOfThread(const unsigned int nThreads)
 {
     std::ofstream result(CsvFile, std::ios::app);
-
+    double totalLoggingTime = 0.0;
     for (unsigned int i = 0; i < Rounds; ++i) {
-        std::ofstream file(TempLogFile, std::ios::trunc);
-        file.close();
-
         std::cout << "\n\tstarting round " << i;
 
         FILETIME creationTime, exitTime, kernelTime, userTime;
@@ -52,7 +47,8 @@ void allRoundsOfThread(const unsigned int nThreads)
         HANDLE hProcess = GetCurrentProcess();
 
         long long throughputTime = runLongBenchmark(nThreads);
-        std::cout << "\n\tthroughput(us): " << throughputTime;
+        totalLoggingTime += throughputTime;
+        std::cout << "\n\tmean time per log(ns): " << throughputTime / (nThreads * MessagesPerThread);
         if (GetProcessTimes(hProcess, &creationTime, &exitTime, &kernelTime, &userTime)) {
             ULARGE_INTEGER k, u;
             k.LowPart = kernelTime.dwLowDateTime;
@@ -64,6 +60,10 @@ void allRoundsOfThread(const unsigned int nThreads)
         }
         result << nThreads << ',' << throughputTime << ',' << cpuTime << '\n';
     }
+    std::cout << "\nAverage throughput across all rounds: " << std::fixed << std::setprecision(2)
+            << ((Rounds * nThreads * MessagesPerThread) / totalLoggingTime) * 1e9
+            << " logs/sec\n";
+
 }
 
 int main()

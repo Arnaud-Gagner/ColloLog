@@ -2,10 +2,6 @@
 
 #include <charconv>
 
-#include "ColloLog/ThreadPool.h"
-
-extern ThreadPool pool;
-
 thread_local char LocalLogger::mBuffer1[LocalLogger::BufferSize];
 
 thread_local char* LocalLogger::mAppendBuffer = LocalLogger::mBuffer1;

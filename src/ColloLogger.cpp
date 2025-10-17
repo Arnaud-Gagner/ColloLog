@@ -5,15 +5,11 @@
 #include <ctime>
 #include <iostream>
 
-#include "ColloLog/ThreadPool.h"
-
-extern ThreadPool pool;
-
 ColloLogger::ColloLogger(const std::string& filePath, FileOpen mode)
   : mFilePath{ filePath }
   , mAppendIndex{}
   , mWriteIndex{}
-  , mLevel{ LogLevel::Debug }
+  , mLevel{ LogLevel::Debug }, mIsThreadRunning{ true }
 {
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
@@ -28,13 +24,21 @@ ColloLogger::ColloLogger(const std::string& filePath, FileOpen mode)
             break;
         }
     }
+
+    mWriteThread = std::thread(&ColloLogger::threadLoop, this);
 }
 
 ColloLogger::~ColloLogger()
 {
     std::unique_lock<std::mutex> lock(mLock);
-    flushNow();
+    mIsThreadRunning = false;
+    mTaskNotifier.notify_all();
+
     std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    mWriteThread.join();
+    flushNow();
+    
     if (mFile.is_open()) {
         mFile.close();
     }
@@ -154,7 +158,7 @@ void ColloLogger::flush()
 void ColloLogger::addLog(const size_t size, const char* msg, const LogLevel& lvl)
 {
     char* message = mAppendBuffer + mAppendIndex;
-    std::to_chars_result result
+    auto result
       = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
     message = result.ptr;
 
@@ -188,7 +192,7 @@ void ColloLogger::flushMessage(size_t size, const char* msg, LogLevel level)
     std::unique_lock<std::mutex> lock(mFileLock);
 
     char* message = mWriteBuffer;
-    std::to_chars_result result
+    auto result
       = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
     message = result.ptr;
 
@@ -210,6 +214,33 @@ void ColloLogger::write()
 
 }
 
+void ColloLogger::task(const std::function<void()>& task)
+{
+    {
+        std::unique_lock<std::mutex> lock(mTaskLock);
+        mTasks.emplace(task);
+    }
+    mTaskNotifier.notify_one();
+}
+
+void ColloLogger::threadLoop()
+{
+    while (mIsThreadRunning) {
+        std::function<void()> task;
+        {
+            std::unique_lock<std::mutex> lock(mTaskLock);
+            mTaskNotifier.wait(lock, [this] { return !mTasks.empty() || !mIsThreadRunning; });
+            if (!mTasks.empty()) {
+                task = std::move(mTasks.front());
+                mTasks.pop();
+            }
+        }
+        if (task) {
+            task();
+        }
+    }
+}
+
 void ColloLogger::autoAsyncFlush(const char* msg, LogLevel level)
 {
     const size_t msgSize = std::strlen(msg);
@@ -218,7 +249,7 @@ void ColloLogger::autoAsyncFlush(const char* msg, LogLevel level)
         swapBuffers();
         addLog(msgSize, msg, level);
         mLock.unlock();
-        pool.addTask([this] { write(); });
+        task([this] { write(); });
     }
     else {
         addLog(msgSize, msg, level);
@@ -245,7 +276,7 @@ void ColloLogger::manualAsyncFlush(const char* msg, LogLevel level)
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
         mLock.unlock();
-        pool.addTask([this, msgSize, msg, level] {
+        task([this, msgSize, msg, level] {
             write();
             flushMessage(msgSize, msg, level);
         });
@@ -254,7 +285,7 @@ void ColloLogger::manualAsyncFlush(const char* msg, LogLevel level)
         addLog(msgSize, msg, level);
         swapBuffers();
         mLock.unlock();
-        pool.addTask([this] { write(); });
+        task([this] { write(); });
     }
 }
 

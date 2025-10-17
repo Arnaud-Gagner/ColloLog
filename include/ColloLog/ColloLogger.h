@@ -2,7 +2,9 @@
 #define COLLO_LOGGER_H
 
 #include <fstream>
+#include <functional>
 #include <mutex>
+#include <queue>
 
 #include "Enums.h"
 
@@ -22,7 +24,7 @@ public:
     void flush();
 
 private:
-    static constexpr size_t BufferSize = 8 * 1024;
+    static constexpr size_t BufferSize = 32 * 1024;
     static constexpr size_t MinimalLogSize = 27;
     static constexpr size_t LevelSize = 6;
     static constexpr size_t TimeSize = 20;
@@ -35,6 +37,9 @@ private:
     void flushNow();
     void swapBuffers();
     void write();
+
+    void task(const std::function<void()>& task);
+    void threadLoop();
 
     void autoAsyncFlush(const char* msg, LogLevel level);
     void autoSameThreadFlush(const char* msg, LogLevel level);
@@ -57,6 +62,14 @@ private:
 
     std::mutex mLock;
     std::mutex mFileLock;
+    std::mutex mTaskLock;
+
+    std::atomic<bool> mIsThreadRunning;
+
+    std::queue<std::function<void()>> mTasks;
+    std::condition_variable mTaskNotifier;
+
+    std::thread mWriteThread;
 };
 
 #endif // !COLLO_LOGGER_H

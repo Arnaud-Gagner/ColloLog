@@ -13,7 +13,6 @@
 #include "NaiveLogger.h"
 
 const unsigned int Iterations = 10;
-const int MessagesPerThread = 1000000;
 const char FooWasCalledMessage[] = "Benchmark::foo was called";
 
 std::thread colloTask(ColloLogger& logger, const char* msg = "")
@@ -80,7 +79,7 @@ long long runLongBenchmark(unsigned int nThreads)
 {
     ColloLogger collo("Logs/test.log", FileOpen::Clear);
     std::queue<std::thread> threads;
-    auto startTime = std::chrono::time_point_cast<std::chrono::microseconds>(
+    auto startTime = std::chrono::time_point_cast<std::chrono::nanoseconds>(
       std::chrono::system_clock::now());
 
     for (unsigned i = 0; i < nThreads; ++i) {
@@ -91,7 +90,7 @@ long long runLongBenchmark(unsigned int nThreads)
         threads.front().join();
         threads.pop();
     }
-    return (std::chrono::time_point_cast<std::chrono::microseconds>(
+    return (std::chrono::time_point_cast<std::chrono::nanoseconds>(
               std::chrono::system_clock::now())
             - startTime)
       .count();

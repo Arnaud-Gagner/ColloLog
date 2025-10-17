@@ -9,7 +9,6 @@ set (SOURCES
     src/ColloLogger.cpp
     src/LocalLogger.cpp
     src/RingBuffer.cpp
-    src/ThreadPool.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
