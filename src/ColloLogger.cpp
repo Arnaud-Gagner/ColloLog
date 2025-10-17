@@ -9,7 +9,7 @@
 
 extern ThreadPool pool;
 
-ColloLogger::ColloLogger(const std::string& filePath)
+ColloLogger::ColloLogger(const std::string& filePath, OpenStrat strat)
   : mFilePath{ filePath }
   , mAppendIndex{}
   , mWriteIndex{}
@@ -19,7 +19,17 @@ ColloLogger::ColloLogger(const std::string& filePath)
     memset(mBuffer2, 0, BufferSize);
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
-    mFile.open(mFilePath, std::ios::app);
+
+    switch (strat) {
+        case OpenStrat::Clear: {
+            mFile.open(mFilePath, std::ios::trunc);
+            break;
+        }
+        default: {
+            mFile.open(mFilePath, std::ios::app);
+            break;
+        }
+    }
 }
 
 ColloLogger::~ColloLogger()

@@ -10,11 +10,9 @@ enum LogLevel {
     Warn = 2,
 };
 
-enum LogRotation {
+enum OpenStrat {
     Append,
-    Clear,
-    ClearDaily,
-    ClearWeekly
+    Clear
 };
 
 enum FlushStrat {

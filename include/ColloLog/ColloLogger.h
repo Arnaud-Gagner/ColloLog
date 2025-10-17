@@ -9,7 +9,7 @@
 class ColloLogger
 {
 public:
-    ColloLogger(const std::string& filePath);
+    ColloLogger(const std::string& filePath, OpenStrat strat);
     ~ColloLogger();
 
     void setLogLevel(const LogLevel& lvl);
