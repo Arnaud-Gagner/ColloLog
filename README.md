@@ -134,7 +134,7 @@ Here is an example of logging with different priority levels.
 
 ```c
 void foo() {
-    collog::setLevel(LogLevel::Critical)
+    collog::setLevel(LogLevel::Critical);
     collog::info("non-critical message");   // won't be saved
     collog::crit("must save this!");        // will be saved
     // ...
