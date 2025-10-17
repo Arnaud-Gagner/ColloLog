@@ -8,7 +8,7 @@ set (SOURCES
     src/Enums.cpp
     src/ColloLogger.cpp
     src/LocalLogger.cpp
-    src/RingBuffer.cpp
+    src/ColloLog.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
