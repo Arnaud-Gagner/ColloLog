@@ -9,7 +9,7 @@
 NaiveLogger::NaiveLogger(const std::string& filepath)
   : mFilePath{ filepath }
   , mCurrentIndex{}
-  , mLevel{ debug }
+  , mLevel{ Debug }
 {
     mFile.open(mFilePath, std::ios::trunc);
     mFile.close();
@@ -35,46 +35,46 @@ void NaiveLogger::addCrit(const std::string& msg)
     auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
       std::chrono::system_clock::now());
     std::string message{ '[' + std::to_string(dateTime.time_since_epoch().count()) + ']'
-                         + levelToString(crit) + " " + msg + '\n' };
+                         + "CRIT" + " " + msg + '\n' };
     addLog(message);
 }
 
 void NaiveLogger::addDebug(const std::string& msg)
 {
-    if (mLevel > debug) {
+    if (mLevel > LogLevel::Debug) {
         return;
     }
 
     auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
       std::chrono::system_clock::now());
     std::string message{ '[' + std::to_string(dateTime.time_since_epoch().count()) + ']'
-                         + levelToString(debug) + " " + msg + '\n' };
+                         + "DEBUG" + " " + msg + '\n' };
     addLog(message);
 }
 
 void NaiveLogger::addInfo(const std::string& msg)
 {
-    if (mLevel > info) {
+    if (mLevel > LogLevel::Info) {
         return;
     }
 
     auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
       std::chrono::system_clock::now());
     std::string message{ '[' + std::to_string(dateTime.time_since_epoch().count()) + ']'
-                         + levelToString(info) + " " + msg + '\n' };
+                         + "INFO" + " " + msg + '\n' };
     addLog(message);
 }
 
 void NaiveLogger::addWarn(const std::string& msg)
 {
-    if (mLevel > warn) {
+    if (mLevel > LogLevel::Warn) {
         return;
     }
 
     auto dateTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
       std::chrono::system_clock::now());
     std::string message{ '[' + std::to_string(dateTime.time_since_epoch().count()) + ']'
-                         + levelToString(warn) + " " + msg + '\n' };
+                         + "WARN" + " " + msg + '\n' };
     addLog(message);
 }
 

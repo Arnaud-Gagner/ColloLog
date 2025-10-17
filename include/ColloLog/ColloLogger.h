@@ -4,9 +4,8 @@
 #include <fstream>
 #include <mutex>
 
-#include "Levels.h"
+#include "Enums.h"
 
-// TODO: lock-free
 class ColloLogger
 {
 public:
@@ -15,10 +14,10 @@ public:
 
     void setLogLevel(const LogLevel& lvl);
 
-    void addCrit(const char* msg);
-    void addDebug(const char* msg);
-    void addInfo(const char* msg);
-    void addWarn(const char* msg);
+    void crit(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
+    void debug(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
+    void info(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
+    void warn(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
 
     void flush();
     
@@ -30,8 +29,16 @@ private:
 
 private:
     void addLog(const size_t size, const char* msg, const LogLevel& lvl);
+
+    void flushMessage(size_t size, const char* msg, LogLevel level);     // only this message gets flushed
+    void flushNow();        // avoid swapping buffers when need to flush now
     void swapBuffers();
     void write();
+
+    void autoAsyncFlush(const char* msg, LogLevel level);
+    void autoSameThreadFlush(const char* msg, LogLevel level);
+    void manualAsyncFlush(const char* msg, LogLevel level);
+    void manualSameThreadFlush(const char* msg, LogLevel level);
 
 private:
     std::ofstream mFile;

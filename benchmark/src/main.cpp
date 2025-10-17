@@ -8,7 +8,7 @@
 #include "benchmarks.h"
 #include <ColloLog/ThreadPool.h>
 
-ThreadPool pool(3);
+ThreadPool pool(2);
 const unsigned int MaxThreads = 10;
 const unsigned int Rounds = 10;
 const char* CsvFile = "D:/Iteration2/ColloLog/result.csv";
@@ -52,7 +52,7 @@ void allRoundsOfThread(const unsigned int nThreads)
         HANDLE hProcess = GetCurrentProcess();
 
         long long throughputTime = runLongBenchmark(nThreads);
-
+        std::cout << "\n\tthroughput(us): " << throughputTime;
         if (GetProcessTimes(hProcess, &creationTime, &exitTime, &kernelTime, &userTime)) {
             ULARGE_INTEGER k, u;
             k.LowPart = kernelTime.dwLowDateTime;

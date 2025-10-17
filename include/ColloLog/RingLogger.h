@@ -5,7 +5,7 @@
 #include <fstream>
 #include <mutex>
 
-#include "Levels.h"
+#include "Enums.h"
 #include "RingBuffer.h"
 
 class RingLogger

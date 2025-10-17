@@ -14,7 +14,7 @@ thread_local char* LocalLogger::mWriteBuffer = LocalLogger::mBuffer2;
 
 thread_local unsigned int LocalLogger::mAppendIndex = 0;
 thread_local unsigned int LocalLogger::mWriteIndex = 0;
-thread_local LogLevel LocalLogger::mLevel = debug;
+thread_local LogLevel LocalLogger::mLevel = LogLevel::Debug;
 
 LocalLogger::LocalLogger(const std::string& filepath)
   : mFilePath{ filepath }
@@ -38,18 +38,32 @@ void LocalLogger::setlevel(const LogLevel& lvl)
     mLevel = lvl;
 }
 
-void LocalLogger::addCrit(const char* msg)
+void LocalLogger::crit(const char* msg, FlushStrat strat)
 {
     size_t msgSize = strlen(msg);
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
     }
-    addLog(msgSize, msg, crit);
+
+    addLog(msgSize, msg, LogLevel::Crit);
+
+    switch (strat) {
+        case FlushStrat::ManualAsync: {
+            [[fallthrough]];
+        }
+        case FlushStrat::ManualSameThread: {
+            swapBuffers();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
-void LocalLogger::addDebug(const char* msg)
+void LocalLogger::debug(const char* msg, FlushStrat strat)
 {
-    if (debug < mLevel) {
+    if (mLevel > LogLevel::Debug) {
         return;
     }
 
@@ -57,12 +71,25 @@ void LocalLogger::addDebug(const char* msg)
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
     }
-    addLog(msgSize, msg, debug);
+    addLog(msgSize, msg, LogLevel::Debug);
+
+    switch (strat) {
+        case FlushStrat::ManualAsync: {
+            [[fallthrough]];
+        }
+        case FlushStrat::ManualSameThread: {
+            swapBuffers();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
-void LocalLogger::addInfo(const char* msg)
+void LocalLogger::info(const char* msg, FlushStrat strat)
 {
-    if (debug < mLevel) {
+    if (mLevel > LogLevel::Info) {
         return;
     }
 
@@ -70,12 +97,25 @@ void LocalLogger::addInfo(const char* msg)
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
     }
-    addLog(msgSize, msg, info);
+    addLog(msgSize, msg, LogLevel::Info);
+
+    switch (strat) {
+        case FlushStrat::ManualAsync: {
+            [[fallthrough]];
+        }
+        case FlushStrat::ManualSameThread: {
+            flush();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
-void LocalLogger::addWarn(const char* msg)
+void LocalLogger::warn(const char* msg, FlushStrat strat)
 {
-    if (warn < mLevel) {
+    if (mLevel > LogLevel::Warn) {
         return;
     }
 
@@ -83,7 +123,20 @@ void LocalLogger::addWarn(const char* msg)
     if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
         swapBuffers();
     }
-    addLog(msgSize, msg, warn);
+    addLog(msgSize, msg, LogLevel::Warn);
+
+    switch (strat) {
+        case FlushStrat::ManualAsync: {
+            [[fallthrough]];
+        }
+        case FlushStrat::ManualSameThread: {
+            flush();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 void LocalLogger::flush()
@@ -117,7 +170,6 @@ void LocalLogger::swapBuffers()
     char* bufferCopy = new char[size];
     std::memcpy(bufferCopy, mWriteBuffer, size);
     write(bufferCopy, size);
-    // pool.addTask([this, bufferCopy, size] { write(bufferCopy, size); });
 }
 
 void LocalLogger::write(const char* data, const size_t size)

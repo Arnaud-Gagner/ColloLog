@@ -167,7 +167,7 @@ Then, use thoses commands:
 
 ```bash
 cd ../benchmark
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../install
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../build/install
 cmake --build build --config Release
 build/Release/ColloLogBench.exe
 ```

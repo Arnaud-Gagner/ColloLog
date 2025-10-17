@@ -5,7 +5,7 @@
 #include <mutex>
 #include <thread>
 
-#include "Levels.h"
+#include "Enums.h"
 
 class LocalLogger
 {
@@ -15,10 +15,10 @@ public:
 
     void setlevel(const LogLevel& lvl);
 
-    void addCrit(const char* msg);
-    void addDebug(const char* msg);
-    void addInfo(const char* msg);
-    void addWarn(const char* msg);
+    void crit(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
+    void debug(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
+    void info(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
+    void warn(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
 
     void flush();
 

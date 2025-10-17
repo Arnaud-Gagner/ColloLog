@@ -5,7 +5,7 @@
 #include <mutex>
 #include <thread>
 
-#include <ColloLog/ColloEnums.h>
+#include <ColloLog/Enums.h>
 
 class NaiveLogger
 {

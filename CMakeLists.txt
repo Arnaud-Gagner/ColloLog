@@ -5,12 +5,10 @@ project(ColloLog VERSION 0.2.0 LANGUAGES CXX)
 include(GNUInstallDirs)
 
 set (SOURCES
-    src/ColloEnums.cpp
+    src/Enums.cpp
     src/ColloLogger.cpp
     src/LocalLogger.cpp
     src/RingBuffer.cpp
-    src/RingLocal.cpp
-    src/RingLogger.cpp
     src/ThreadPool.cpp
 )
 

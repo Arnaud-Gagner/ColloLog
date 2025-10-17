@@ -9,8 +9,6 @@
 
 #include <ColloLog/ColloLogger.h>
 #include <ColloLog/LocalLogger.h>
-#include <ColloLog/RingLocal.h>
-#include <ColloLog/RingLogger.h>
 
 #include "NaiveLogger.h"
 
@@ -22,7 +20,7 @@ std::thread colloTask(ColloLogger& logger, const char* msg = "")
 {
     std::thread colloThread([&] {
         for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.addInfo(msg);
+            logger.info(msg);
         }
     });
     return colloThread;
@@ -32,7 +30,7 @@ std::thread colloDropRate(ColloLogger& logger)
 {
     std::thread colloThread([&] {
         for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.addInfo(std::to_string(i).c_str());
+            logger.info(std::to_string(i).c_str());
         }
     });
     return colloThread;
@@ -42,7 +40,7 @@ std::thread localTask(LocalLogger& logger, const char* msg = "")
 {
     std::thread colloThread([&] {
         for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.addInfo(msg);
+            logger.info(msg);
         }
     });
     return colloThread;
@@ -52,7 +50,7 @@ std::thread LocalLDropRate(LocalLogger& logger)
 {
     std::thread colloThread([&] {
         for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.addInfo(std::to_string(i).c_str());
+            logger.info(std::to_string(i).c_str());
         }
     });
     return colloThread;
@@ -78,51 +76,11 @@ std::thread naiveDropRate(NaiveLogger& logger)
     return colloThread;
 }
 
-std::thread rLocalTask(RingLocal& logger, const char* msg = "")
-{
-    std::thread colloThread([&] {
-        for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.addInfo(msg);
-        }
-    });
-    return colloThread;
-}
-
-std::thread rLocalDropRate(RingLocal& logger)
-{
-    std::thread colloThread([&] {
-        for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.addInfo(std::to_string(i).c_str());
-        }
-    });
-    return colloThread;
-}
-
-std::thread rLoggerTask(RingLogger& logger, const char* msg = "")
-{
-    std::thread colloThread([&] {
-        for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.addInfo(msg);
-        }
-    });
-    return colloThread;
-}
-
-std::thread rLoggerDropRate(RingLogger& logger)
-{
-    std::thread colloThread([&] {
-        for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.addInfo(std::to_string(i).c_str());
-        }
-    });
-    return colloThread;
-}
-
 long long runLongBenchmark(unsigned int nThreads)
 {
     ColloLogger collo("Logs/test.log");
     std::queue<std::thread> threads;
-    auto startTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
+    auto startTime = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now());
 
     for (unsigned i = 0; i < nThreads; ++i) {
         threads.push(std::move(colloTask(collo, FooWasCalledMessage)));
@@ -132,7 +90,7 @@ long long runLongBenchmark(unsigned int nThreads)
         threads.front().join();
         threads.pop();
     }
-    return (std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()) - startTime).count();
+    return (std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()) - startTime).count();
 }
 
 long long runDropRateBenchmark(unsigned int nThreads)
