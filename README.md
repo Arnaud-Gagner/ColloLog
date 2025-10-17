@@ -2,9 +2,7 @@
 
 ColloLog is a lightweight, high-performance C++ logging library designed for multithreaded and performance-critical applications. It offers efficient, thread-safe logging with minimal performance impact.
 
-![License: MIT](https://img.shields.io/badge/license-MIT-blue)
-![Platform: Windows](https://img.shields.io/badge/platform-Windows-blue)
-![Status: In Development](https://img.shields.io/badge/status-in_development-yellow)
+![License: MIT](https://img.shields.io/badge/license-MIT-blue) ![Platform: Windows](https://img.shields.io/badge/platform-Windows-blue)
 
 ---
 
@@ -18,7 +16,7 @@ ColloLog is a lightweight, high-performance C++ logging library designed for mul
 
 - Static format (for optimization)
 
-**For single-threaded projects**, ``ColloLog`` is still highly performant by offering a throughput of **11'5000'000 logs/s** which is the fastest plain-text logger I know of.
+**For single-threaded projects**, ``ColloLog`` is still highly performant by offering a throughput of **16'000'000 logs/s** which is the fastest plain-text logger I know of.
 
 ### So when to use this tool?
 
@@ -34,19 +32,23 @@ ColloLog is a lightweight, high-performance C++ logging library designed for mul
 
 `ColloLog` provides two logger variants, optimized for different threading models:
 
-- `ColloLogger`: highly performant for **few threads** (1-3)
+- `collog`: highly performant for **few threads** (1-3)
 
-- `LocalLogger`: highly performant for **multiple threads** (4+)
+- `localog`: highly performant for **multiple threads** (2+)
 
 **Throughput example:** Logs were automatically flushed to disk by the tool and messages were static.
 
-- [1 thread] `ColloLogger`: 16'000'000 logs/s
+- [1 thread] `collog`: 16'000'000 logs/s 
 
-- [2 threads] `ColloLogger`: 14'000'000 logs/s
+- [1 thread] `localog`: 11'000'000 logs/s 
 
-- [8 threads] `LocalLogger`: 11'000'000 logs/s
+- [2 threads] `collog` : 14'5000'000 logs/s
+
+- [2+ threads] `localog`: 17'500'000 logs/s
 
 > :exclamation: Benchmarks were run on an Intel i7-13620H (13th gen), 32GB RAM.
+
+> :warning: Beware: benchmarks do not replicate normal use in an application has applications do not spam the logger every 50-100 nanoseconds per thread. Therefore, `collog` is still the prefered tool when using 3-4 regularly threads.
 
 ---
 
@@ -54,10 +56,9 @@ ColloLog is a lightweight, high-performance C++ logging library designed for mul
 
 Collineo Inc. is committed to delivering top-quality solutions to its clients. With expertise in automation machinery and software development, Collineo serves a diverse range of industries, leveraging adaptability as one of its greatest strengths.
 
-Link to our [website][1] and to our [LinkedIn][2]
+Link to our [LinkedIn][1]!
 
-[1]: http://www.collineo.net
-[2]: https://ca.linkedin.com/company/collineo-inc
+[1]: https://ca.linkedin.com/company/collineo-inc
 
 ---
 
@@ -96,48 +97,49 @@ cmake --install . --prefix install --config Debug;
 
 ## Integrating to your projects
 
-> :warning: These steps might change before going through version 1. 
-
-1. Instantiate a logger globally in the main.cpp.
-
-```c
-#include <ColloLog/ColloLogger>
-
-ColloLogger logger("path/to/logs");
-```
-
-2. Optionally, multiple loggers can be created if some systems need their own sink.
+**1. Instantiate** a logger in the main.cpp. There are two `FileOpen` options:
+    - `FileOpen::Append`: default value, does not clear the file when opening.
+    - `FileOpen::Clear`: clears the file when opening.
 
 ```c
-// ...
-ColloLogger logger("path/to/logs");
-ColloLogger userLogger("path/to/user/logs");
+#include <ColloLog.h>
+
+collog::init("path/to/logs");
 ```
 
-3. `ColloLog` offers different priority levels. When a higher priority is set, lower leveled logs will be completely ignored. The default value is `debug`.
+**2. Flushing strategies:** By default, `ColloLog` will automatically flush data when its buffer is full. When calling a logging function, it can take an extra arguments to change the strategy:
+
+- `AutoAsync`: default option, automatically flushes data in an asynchronous way.
+- `AutoSameThread`: automatically flushes data in the thread where the buffer was filled in a synchronous way.
+- `ManualAsync`: flushes data after adding the log in an asynchronous way
+- `ManualSameThread`: flushes data after adding the log in the thread where the buffer was filled in a synchronous way.
+
+Furthermore, loggers can be manually flushed by calliing the `flush()` function without needing add a message.
+
+> :warning: `localog` only handle automatic or manual flushes.
+
+**3. Log priority:** `ColloLog` offers different priority levels. When a higher priority is set, lower leveled logs will be completely ignored. The default value is `debug`.
 
 Here is the list of priorities with the logging method associated with it in from most to least prioritized:
 
-- `crit` called with `addCrit()`
+- `crit` called with `crit()`
 
-- `warn` called with `addWarn()`
+- `warn` called with `warn()`
 
-- `info` called with `addInfo()`
+- `info` called with `info()`
 
-- `debug` called with `addDebug()`
+- `debug` called with `debug()`
 
 Here is an example of logging with different priority levels.
 
 ```c
-#include <ColloLog/Levels.h>
-
 void foo() {
-    logger.setLevel(LogLevel::critical)
-    logger.addInfo("non-critical message");   // won't be saved
-    logger.addCrit("must save this!");        // will be saved
+    collog::setLevel(LogLevel::Critical)
+    collog::info("non-critical message");   // won't be saved
+    collog::crit("must save this!");        // will be saved
     // ...
-    logger.setLevel(LogLevel::info);
-    logger.addInfo("non-critical message");   // will be saved
+    collog::setLevel(LogLevel::Info);
+    collog::addInfo("non-critical message");   // will be saved
 }
 ```
 
@@ -166,4 +168,4 @@ build/Release/ColloLogBench.exe
 
 ## Contributions
 
-At this time, ColloLog is not accepting external contributions, but feel free to publish issues!
+At this time, ColloLog is not accepting external contributions, but feel free to publish issues! :)
