@@ -9,7 +9,8 @@ ColloLogger::ColloLogger(const std::string& filePath, FileOpen mode)
   : mFilePath{ filePath }
   , mAppendIndex{}
   , mWriteIndex{}
-  , mLevel{ LogLevel::Debug }, mIsThreadRunning{ true }
+  , mLevel{ LogLevel::Debug }
+  , mIsThreadRunning{ true }
 {
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
@@ -38,13 +39,13 @@ ColloLogger::~ColloLogger()
 
     mWriteThread.join();
     flushNow();
-    
+
     if (mFile.is_open()) {
         mFile.close();
     }
 }
 
-void ColloLogger::setLogLevel(const LogLevel& lvl)
+void ColloLogger::setLevel(const LogLevel& lvl)
 {
     mLevel = lvl;
 }
@@ -155,6 +156,15 @@ void ColloLogger::flush()
     write();
 }
 
+void ColloLogger::clear()
+{
+    std::unique_lock<std::mutex> lock(mFileLock);
+    if (mFile.is_open()) {
+        mFile.close();
+    }
+    mFile.open(mFilePath, std::ios::trunc);
+}
+
 void ColloLogger::addLog(const size_t size, const char* msg, const LogLevel& lvl)
 {
     char* message = mAppendBuffer + mAppendIndex;
@@ -211,7 +221,6 @@ void ColloLogger::write()
 {
     std::unique_lock<std::mutex> lock(mFileLock);
     mFile.write(mWriteBuffer, mWriteIndex);
-
 }
 
 void ColloLogger::task(const std::function<void()>& task)
@@ -229,7 +238,8 @@ void ColloLogger::threadLoop()
         std::function<void()> task;
         {
             std::unique_lock<std::mutex> lock(mTaskLock);
-            mTaskNotifier.wait(lock, [this] { return !mTasks.empty() || !mIsThreadRunning; });
+            mTaskNotifier.wait(lock,
+                               [this] { return !mTasks.empty() || !mIsThreadRunning; });
             if (!mTasks.empty()) {
                 task = std::move(mTasks.front());
                 mTasks.pop();

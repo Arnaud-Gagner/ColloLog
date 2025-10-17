@@ -21,7 +21,8 @@ public:
     void warn(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
 
     void flush();
-
+    void clear();
+    
 private:
     void addLog(const size_t& size, const char* msg, const LogLevel& lvl);
     void swapBuffers();

@@ -146,6 +146,15 @@ void LocalLogger::flush()
     swapBuffers();
 }
 
+void LocalLogger::clear()
+{
+    std::unique_lock<std::mutex> lock(mLock);
+    if (mFile.is_open()) {
+        mFile.close();
+    }
+    mFile.open(mFilePath, std::ios::trunc);
+}
+
 void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lvl)
 {
     char* message = mAppendBuffer + mAppendIndex;

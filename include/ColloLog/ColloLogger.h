@@ -14,7 +14,7 @@ public:
     ColloLogger(const std::string& filePath, FileOpen mode = FileOpen::Append);
     ~ColloLogger();
 
-    void setLogLevel(const LogLevel& lvl);
+    void setLevel(const LogLevel& lvl);
 
     void crit(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
     void debug(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
@@ -22,6 +22,7 @@ public:
     void warn(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
 
     void flush();
+    void clear();
 
 private:
     static constexpr size_t BufferSize = 32 * 1024;
