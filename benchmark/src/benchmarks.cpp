@@ -7,49 +7,48 @@
 #include <string>
 #include <thread>
 
-#include <ColloLog/ColloLogger.h>
-#include <ColloLog/LocalLogger.h>
+#include <ColloLog.h>
 
 #include "NaiveLogger.h"
 
 const unsigned int Iterations = 10;
 const char FooWasCalledMessage[] = "Benchmark::foo was called";
 
-std::thread colloTask(ColloLogger& logger, const char* msg = "")
+std::thread colloTask(const char* msg = "")
 {
     std::thread colloThread([&] {
         for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.info(msg);
+            collog::info(msg);
         }
     });
     return colloThread;
 }
 
-std::thread colloDropRate(ColloLogger& logger)
+std::thread colloDropRate()
 {
     std::thread colloThread([&] {
         for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.info(std::to_string(i).c_str());
+            collog::info(std::to_string(i).c_str());
         }
     });
     return colloThread;
 }
 
-std::thread localTask(LocalLogger& logger, const char* msg = "")
+std::thread localTask(const char* msg = "")
 {
     std::thread colloThread([&] {
         for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.info(msg);
+            localog::info(msg);
         }
     });
     return colloThread;
 }
 
-std::thread LocalLDropRate(LocalLogger& logger)
+std::thread LocalLDropRate()
 {
     std::thread colloThread([&] {
         for (int i = 0; i < MessagesPerThread; ++i) {
-            logger.info(std::to_string(i).c_str());
+            localog::info(std::to_string(i).c_str());
         }
     });
     return colloThread;
@@ -77,13 +76,12 @@ std::thread naiveDropRate(NaiveLogger& logger)
 
 long long runLongBenchmark(unsigned int nThreads)
 {
-    ColloLogger collo("Logs/test.log", FileOpen::Clear);
     std::queue<std::thread> threads;
     auto startTime = std::chrono::time_point_cast<std::chrono::nanoseconds>(
       std::chrono::system_clock::now());
 
     for (unsigned i = 0; i < nThreads; ++i) {
-        threads.push(std::move(colloTask(collo, FooWasCalledMessage)));
+        threads.push(std::move(localTask(FooWasCalledMessage)));
     }
     size_t threads_number = threads.size();
     for (unsigned int i = 0; i < threads_number; ++i) {
@@ -98,13 +96,12 @@ long long runLongBenchmark(unsigned int nThreads)
 
 long long runDropRateBenchmark(unsigned int nThreads)
 {
-    ColloLogger collo("Logs/test.log", FileOpen::Clear);
     std::queue<std::thread> threads;
     auto startTime = std::chrono::time_point_cast<std::chrono::milliseconds>(
       std::chrono::system_clock::now());
 
     for (unsigned int i = 0; i < nThreads; ++i) {
-        threads.push(std::move(colloDropRate(collo)));
+        threads.push(std::move(colloDropRate()));
     }
     size_t threads_number = threads.size();
     for (unsigned int i = 0; i < threads_number; ++i) {
