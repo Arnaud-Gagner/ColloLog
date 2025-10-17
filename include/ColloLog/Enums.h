@@ -10,7 +10,7 @@ enum LogLevel {
     Warn = 2,
 };
 
-enum OpenStrat {
+enum FileOpen {
     Append,
     Clear
 };

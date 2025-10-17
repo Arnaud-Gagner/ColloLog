@@ -9,7 +9,7 @@
 
 extern ThreadPool pool;
 
-ColloLogger::ColloLogger(const std::string& filePath, OpenStrat strat)
+ColloLogger::ColloLogger(const std::string& filePath, FileOpen mode)
   : mFilePath{ filePath }
   , mAppendIndex{}
   , mWriteIndex{}
@@ -20,8 +20,8 @@ ColloLogger::ColloLogger(const std::string& filePath, OpenStrat strat)
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
 
-    switch (strat) {
-        case OpenStrat::Clear: {
+    switch (mode) {
+        case FileOpen::Clear: {
             mFile.open(mFilePath, std::ios::trunc);
             break;
         }
@@ -75,18 +75,23 @@ void ColloLogger::debug(const char* msg, FlushStrat strat)
         return;
     }
 
-    size_t msgSize = strlen(msg);
-    mLock.lock();
-
-    if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
-        swapBuffers();
-        addLog(msgSize, msg, LogLevel::Debug);
-        mLock.unlock();
-        pool.addTask([this] { write(); });
-    }
-    else {
-        addLog(msgSize, msg, LogLevel::Debug);
-        mLock.unlock();
+    switch (strat) {
+        case FlushStrat::AutoAsync: {
+            autoAsyncFlush(msg, LogLevel::Crit);
+            break;
+        }
+        case FlushStrat::AutoSameThread: {
+            autoSameThreadFlush(msg, LogLevel::Crit);
+            break;
+        }
+        case FlushStrat::ManualAsync: {
+            manualAsyncFlush(msg, LogLevel::Crit);
+            break;
+        }
+        default: {
+            manualSameThreadFlush(msg, LogLevel::Crit);
+            break;
+        }
     }
 }
 
@@ -96,18 +101,23 @@ void ColloLogger::info(const char* msg, FlushStrat strat)
         return;
     }
 
-    size_t msgSize = strlen(msg);
-    mLock.lock();
-
-    if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
-        swapBuffers();
-        addLog(msgSize, msg, LogLevel::Info);
-        mLock.unlock();
-        pool.addTask([this] { write(); });
-    }
-    else {
-        addLog(msgSize, msg, LogLevel::Info);
-        mLock.unlock();
+    switch (strat) {
+        case FlushStrat::AutoAsync: {
+            autoAsyncFlush(msg, LogLevel::Crit);
+            break;
+        }
+        case FlushStrat::AutoSameThread: {
+            autoSameThreadFlush(msg, LogLevel::Crit);
+            break;
+        }
+        case FlushStrat::ManualAsync: {
+            manualAsyncFlush(msg, LogLevel::Crit);
+            break;
+        }
+        default: {
+            manualSameThreadFlush(msg, LogLevel::Crit);
+            break;
+        }
     }
 }
 
@@ -117,18 +127,23 @@ void ColloLogger::warn(const char* msg, FlushStrat strat)
         return;
     }
 
-    size_t msgSize = strlen(msg);
-    mLock.lock();
-
-    if (BufferSize <= mAppendIndex + MinimalLogSize + msgSize) {
-        swapBuffers();
-        addLog(msgSize, msg, LogLevel::Warn);
-        mLock.unlock();
-        pool.addTask([this] { write(); });
-    }
-    else {
-        addLog(msgSize, msg, LogLevel::Warn);
-        mLock.unlock();
+    switch (strat) {
+        case FlushStrat::AutoAsync: {
+            autoAsyncFlush(msg, LogLevel::Crit);
+            break;
+        }
+        case FlushStrat::AutoSameThread: {
+            autoSameThreadFlush(msg, LogLevel::Crit);
+            break;
+        }
+        case FlushStrat::ManualAsync: {
+            manualAsyncFlush(msg, LogLevel::Crit);
+            break;
+        }
+        default: {
+            manualSameThreadFlush(msg, LogLevel::Crit);
+            break;
+        }
     }
 }
 

@@ -16,14 +16,14 @@ thread_local unsigned int LocalLogger::mAppendIndex = 0;
 thread_local unsigned int LocalLogger::mWriteIndex = 0;
 thread_local LogLevel LocalLogger::mLevel = LogLevel::Debug;
 
-LocalLogger::LocalLogger(const std::string& filepath, OpenStrat strat)
+LocalLogger::LocalLogger(const std::string& filepath, FileOpen mode)
   : mFilePath{ filepath }
 {
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
     
-    switch (strat) {
-        case OpenStrat::Clear: {
+    switch (mode) {
+        case FileOpen::Clear: {
             mFile.open(mFilePath, std::ios::trunc);
             break;
         }

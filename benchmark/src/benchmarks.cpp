@@ -78,7 +78,7 @@ std::thread naiveDropRate(NaiveLogger& logger)
 
 long long runLongBenchmark(unsigned int nThreads)
 {
-    ColloLogger collo("Logs/test.log");
+    ColloLogger collo("Logs/test.log", OpenStrat::Clear);
     std::queue<std::thread> threads;
     auto startTime = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now());
 
@@ -95,7 +95,7 @@ long long runLongBenchmark(unsigned int nThreads)
 
 long long runDropRateBenchmark(unsigned int nThreads)
 {
-    ColloLogger collo("Logs/test.log");
+    ColloLogger collo("Logs/test.log", OpenStrat::Clear);
     std::queue<std::thread> threads;
     auto startTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
 

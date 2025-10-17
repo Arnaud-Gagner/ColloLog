@@ -10,7 +10,7 @@
 class LocalLogger
 {
 public:
-    LocalLogger(const std::string& filePath, OpenStrat strat);
+    LocalLogger(const std::string& filePath, FileOpen mode = FileOpen::Append);
     ~LocalLogger();
 
     void setlevel(const LogLevel& lvl);

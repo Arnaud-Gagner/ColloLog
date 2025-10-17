@@ -8,7 +8,7 @@
 #include "benchmarks.h"
 #include <ColloLog/ThreadPool.h>
 
-ThreadPool pool(2);
+ThreadPool pool(1);
 const unsigned int MaxThreads = 10;
 const unsigned int Rounds = 10;
 const char* CsvFile = "D:/Iteration2/ColloLog/result.csv";
