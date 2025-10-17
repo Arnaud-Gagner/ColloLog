@@ -40,9 +40,9 @@ ColloLog is a lightweight, high-performance C++ logging library designed for mul
 
 **Throughput example:** Logs were automatically flushed to disk by the tool and messages were static.
 
-- [1 thread] `ColloLogger`: 15'000'000 logs/s
+- [1 thread] `ColloLogger`: 16'000'000 logs/s
 
-- [2 threads] `ColloLogger`: 14'800'000 logs/s
+- [2 threads] `ColloLogger`: 14'000'000 logs/s
 
 - [8 threads] `LocalLogger`: 11'000'000 logs/s
 
@@ -79,9 +79,11 @@ git submodule update --init --recursive
 
 - Build the library:
 
+Make sure you are in the root folder.
+
 ```bash
-mkdir ColloLog/build;
-cd ColloLog/build;
+mkdir build;
+cd build;
 cmake .. -DCMAKE_BUILD_TYPE=Release;
 cmake --build . --config Release;
 cmake --install . --prefix install --config Release;
@@ -94,29 +96,17 @@ cmake --install . --prefix install --config Debug;
 
 ## Integrating to your projects
 
-> :warning: `ColloLog` uses its own implementation of thread pools. To allow your current thread pools to work with `ColloLog`, a thread pool interface will be added.
-
 > :warning: These steps might change before going through version 1. 
 
-1. In main.cpp, instantiate the thread pool with the number of threads that is best for the project.
+1. Instantiate a logger globally in the main.cpp.
 
 ```c
-#include <ColloLog/ThreadPool.h>
+#include <ColloLog/ColloLogger>
 
-constexpr unsigned int NUMBER_OF_THREADS = 3;
-
-ThreadPool pool(NUMBER_OF_THREADS);
-```
-
-2. Instantiate a logger globally in the main.cpp after the thread pool.
-
-```c
-// ...
-ThreadPool pool(NUMBER_OF_THREADS);
 ColloLogger logger("path/to/logs");
 ```
 
-3. Optionally, multiple loggers can be created if some systems need their own sink.
+2. Optionally, multiple loggers can be created if some systems need their own sink.
 
 ```c
 // ...
@@ -124,7 +114,7 @@ ColloLogger logger("path/to/logs");
 ColloLogger userLogger("path/to/user/logs");
 ```
 
-4. `ColloLog` offers different priority levels. When a higher priority is set, lower leveled logs will be completely ignored. The default value is `debug`.
+3. `ColloLog` offers different priority levels. When a higher priority is set, lower leveled logs will be completely ignored. The default value is `debug`.
 
 Here is the list of priorities with the logging method associated with it in from most to least prioritized:
 
