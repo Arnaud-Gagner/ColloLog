@@ -46,7 +46,7 @@ void collog::init(const char* path, FileOpen mode)
     }
 }
 
-void collog::setlevel(const LogLevel& lvl)
+void collog::setLevel(const LogLevel& lvl)
 {
     instance().setLevel(lvl);
 }
