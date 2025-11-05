@@ -51,8 +51,8 @@ private:
     std::ofstream mFile;
     std::string mFilePath;
 
-    alignas(64) char mBuffer1[BufferSize];
-    alignas(64) char mBuffer2[BufferSize];
+    char mBuffer1[BufferSize];
+    char mBuffer2[BufferSize];
     char* mAppendBuffer;
     char* mWriteBuffer;
 
