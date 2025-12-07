@@ -81,7 +81,7 @@ long long runLongBenchmark(unsigned int nThreads)
       std::chrono::system_clock::now());
 
     for (unsigned i = 0; i < nThreads; ++i) {
-        threads.push(std::move(localTask(FooWasCalledMessage)));
+        threads.push(std::move(colloTask(FooWasCalledMessage)));
     }
     size_t threads_number = threads.size();
     for (unsigned int i = 0; i < threads_number; ++i) {
