@@ -158,8 +158,7 @@ void LocalLogger::clear()
 void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lvl)
 {
     char* message = mAppendBuffer + mAppendIndex;
-    std::to_chars_result result
-      = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
+    std::to_chars_result result = std::to_chars(message, message + TimeSize, __rdtsc());
     message = result.ptr;
 
     const char* level = levelToCString(lvl);

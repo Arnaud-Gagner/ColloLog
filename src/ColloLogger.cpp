@@ -4,6 +4,7 @@
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <windows.h>
 
 ColloLogger::ColloLogger(const std::string& filePath, FileOpen mode)
   : mFilePath{ filePath }
@@ -168,8 +169,7 @@ void ColloLogger::clear()
 void ColloLogger::addLog(const size_t size, const char* msg, const LogLevel& lvl)
 {
     char* message = mAppendBuffer + mAppendIndex;
-    auto result
-      = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
+    auto result = std::to_chars(message, message + TimeSize, __rdtsc());
     message = result.ptr;
 
     const char* level = levelToCString(lvl);
@@ -202,8 +202,7 @@ void ColloLogger::flushMessage(size_t size, const char* msg, LogLevel level)
     std::unique_lock<std::mutex> lock(mFileLock);
 
     char* message = mWriteBuffer;
-    auto result
-      = std::to_chars(message, message + TimeSize, static_cast<int>(std::clock()));
+    auto result = std::to_chars(message, message + TimeSize, __rdtsc());
     message = result.ptr;
 
     const char* lvl = levelToCString(level);
