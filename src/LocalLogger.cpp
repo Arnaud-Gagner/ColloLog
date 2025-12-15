@@ -3,6 +3,8 @@
 #include <charconv>
 #include <cstring>
 
+#include "CollogUtils.h"
+
 thread_local char LocalLogger::mBuffer1[LocalLogger::BufferSize];
 
 thread_local char* LocalLogger::mAppendBuffer = LocalLogger::mBuffer1;
@@ -159,7 +161,7 @@ void LocalLogger::clear()
 void LocalLogger::addLog(const size_t& size, const char* msg, const LogLevel& lvl)
 {
     char* message = mAppendBuffer + mAppendIndex;
-    std::to_chars_result result = std::to_chars(message, message + TimeSize, __rdtsc());
+    auto result = std::to_chars(message, message + TimeSize, collogUtils::rdtsc());
     message = result.ptr;
 
     const char* level = levelToCString(lvl);
