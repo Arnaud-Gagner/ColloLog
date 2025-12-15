@@ -1,4 +1,3 @@
-#include <Windows.h>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -43,25 +42,10 @@ void allRoundsOfThread(const unsigned int nThreads)
         localog::clear();
         std::cout << "\n\tstarting round " << i;
 
-        FILETIME creationTime, exitTime, kernelTime, userTime;
-        double cpuTime = 0.0;
-
-        HANDLE hProcess = GetCurrentProcess();
-
         long long throughputTime = runLongBenchmark(nThreads);
         totalLoggingTime += throughputTime;
         std::cout << "\n\tmean time per log(ns): "
                   << throughputTime / (nThreads * MessagesPerThread);
-        if (GetProcessTimes(hProcess, &creationTime, &exitTime, &kernelTime, &userTime)) {
-            ULARGE_INTEGER k, u;
-            k.LowPart = kernelTime.dwLowDateTime;
-            k.HighPart = kernelTime.dwHighDateTime;
-            u.LowPart = userTime.dwLowDateTime;
-            u.HighPart = userTime.dwHighDateTime;
-
-            cpuTime = (k.QuadPart + u.QuadPart) / 10000.0;
-        }
-        result << nThreads << ',' << throughputTime << ',' << cpuTime << '\n';
     }
     std::cout << "\nAverage throughput across all rounds: " << std::fixed
               << std::setprecision(2)
