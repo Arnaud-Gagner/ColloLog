@@ -1,10 +1,13 @@
 #ifndef COLLO_LOGGER_H
 #define COLLO_LOGGER_H
 
+#include <atomic>
+#include <condition_variable>
 #include <fstream>
 #include <functional>
 #include <mutex>
 #include <queue>
+#include <thread>
 
 #include "Enums.h"
 

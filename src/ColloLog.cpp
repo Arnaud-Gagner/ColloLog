@@ -81,42 +81,48 @@ void collog::clear()
     instance().clear();
 }
 
-void localog::init(const char* path, FileOpen mode) {
-        std::call_once(localInitFlag,
-                   [&]() { localogInstance = std::make_unique<LocalLogger>(path, mode); });
+void localog::init(const char* path, FileOpen mode)
+{
+    std::call_once(localInitFlag, [&]() {
+        localogInstance = std::make_unique<LocalLogger>(path, mode);
+    });
 
     if (!localogInstance) {
         throw std::runtime_error("Logger failed to initialize.");
     }
 }
 
-void localog::setlevel(const LogLevel& lvl) {
+void localog::setlevel(const LogLevel& lvl)
+{
     localInstance().setlevel(lvl);
 }
 
-void localog::crit(const char* msg, FlushStrat strat) {
+void localog::crit(const char* msg, FlushStrat strat)
+{
     localInstance().crit(msg, strat);
 }
 
-void localog::debug(const char* msg, FlushStrat strat) {
+void localog::debug(const char* msg, FlushStrat strat)
+{
     localInstance().debug(msg, strat);
-
 }
 
-void localog::info(const char* msg, FlushStrat strat) {
+void localog::info(const char* msg, FlushStrat strat)
+{
     localInstance().info(msg, strat);
-
 }
 
-void localog::warn(const char* msg, FlushStrat strat) {
+void localog::warn(const char* msg, FlushStrat strat)
+{
     localInstance().warn(msg, strat);
-
 }
 
-void localog::flush() {
+void localog::flush()
+{
     localInstance().flush();
 }
 
-void localog::clear() {
+void localog::clear()
+{
     localInstance().clear();
 }

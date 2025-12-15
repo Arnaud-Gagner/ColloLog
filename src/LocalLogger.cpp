@@ -1,6 +1,7 @@
 #include "ColloLog/LocalLogger.h"
 
 #include <charconv>
+#include <cstring>
 
 thread_local char LocalLogger::mBuffer1[LocalLogger::BufferSize];
 

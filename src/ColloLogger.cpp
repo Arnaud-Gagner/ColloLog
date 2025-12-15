@@ -4,7 +4,6 @@
 #include <cstring>
 #include <ctime>
 #include <iostream>
-#include <windows.h>
 
 ColloLogger::ColloLogger(const std::string& filePath, FileOpen mode)
   : mFilePath{ filePath }
