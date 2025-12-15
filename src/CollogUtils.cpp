@@ -2,12 +2,12 @@
 
 #ifdef _WIN32
 #include <intrin.h>
-uint64_t rdtsc()
+uint64_t collogUtils::rdtsc()
 {
     return __rdtsc();
 }
 #else
-uint64_t rdtsc()
+uint64_t collogUtils::rdtsc()
 {
     unsigned int lo, hi;
     __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
