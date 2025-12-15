@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <chrono>
-#include <direct.h>
+#include <cstring>
 #include <iostream>
 #include <string>
 

@@ -9,6 +9,7 @@ set (SOURCES
     src/ColloLogger.cpp
     src/LocalLogger.cpp
     src/ColloLog.cpp
+    src/CollogUtils.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})

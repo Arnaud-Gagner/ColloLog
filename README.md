@@ -38,11 +38,11 @@ ColloLog is a lightweight, high-performance C++ logging library designed for mul
 
 **Throughput example:** Logs were automatically flushed to disk by the tool and messages were static.
 
-- [1 thread] `collog`: 16'000'000 logs/s 
+- [1 thread] `collog`: 17'500'000 logs/s 
 
 - [1 thread] `localog`: 11'000'000 logs/s 
 
-- [2 threads] `collog` : 14'5000'000 logs/s
+- [2 threads] `collog` : 16'500'000 logs/s
 
 - [2+ threads] `localog`: 17'500'000 logs/s
 

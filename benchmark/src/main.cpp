@@ -1,12 +1,11 @@
-#include <Windows.h>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <thread>
 
-#include "benchmarks.h"
 #include "ColloLog.h"
+#include "benchmarks.h"
 
 const unsigned int MaxThreads = 10;
 const unsigned int Rounds = 10;
@@ -43,36 +42,21 @@ void allRoundsOfThread(const unsigned int nThreads)
         localog::clear();
         std::cout << "\n\tstarting round " << i;
 
-        FILETIME creationTime, exitTime, kernelTime, userTime;
-        double cpuTime = 0.0;
-
-        HANDLE hProcess = GetCurrentProcess();
-
         long long throughputTime = runLongBenchmark(nThreads);
         totalLoggingTime += throughputTime;
-        std::cout << "\n\tmean time per log(ns): " << throughputTime / (nThreads * MessagesPerThread);
-        if (GetProcessTimes(hProcess, &creationTime, &exitTime, &kernelTime, &userTime)) {
-            ULARGE_INTEGER k, u;
-            k.LowPart = kernelTime.dwLowDateTime;
-            k.HighPart = kernelTime.dwHighDateTime;
-            u.LowPart = userTime.dwLowDateTime;
-            u.HighPart = userTime.dwHighDateTime;
-
-            cpuTime = (k.QuadPart + u.QuadPart) / 10000.0;
-        }
-        result << nThreads << ',' << throughputTime << ',' << cpuTime << '\n';
+        std::cout << "\n\tmean time per log(ns): "
+                  << throughputTime / (nThreads * MessagesPerThread);
     }
-    std::cout << "\nAverage throughput across all rounds: " << std::fixed << std::setprecision(2)
-            << ((Rounds * nThreads * MessagesPerThread) / totalLoggingTime) * 1e9
-            << " logs/sec\n";
-
+    std::cout << "\nAverage throughput across all rounds: " << std::fixed
+              << std::setprecision(2)
+              << ((Rounds * nThreads * MessagesPerThread) / totalLoggingTime) * 1e9
+              << " logs/sec\n";
 }
 
 int main()
 {
     collog::init("Logs/collog.log", FileOpen::Clear);
     localog::init("Logs/localog.log", FileOpen::Clear);
-    
     // dropRate();
     for (unsigned int i = 1; i <= MaxThreads; ++i) {
         std::cout << "\nStarting for threads: " << i;
