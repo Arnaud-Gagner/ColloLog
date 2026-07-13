@@ -82,10 +82,10 @@ void NaiveLogger::addLog(const std::string& msg)
 {
     size_t messageSize = msg.size();
     mLock.lock();
-    if (BufferSize < mCurrentIndex + messageSize) {
+    if (BufferSize < static_cast<size_t>(mCurrentIndex + messageSize)) {
         write();
     }
-    if (BufferSize < mCurrentIndex) {
+    if (BufferSize < static_cast<size_t>(mCurrentIndex)) {
         assert(("Log message exceeds buffer size"));
     }
 

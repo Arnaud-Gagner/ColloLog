@@ -80,18 +80,17 @@ git submodule update --init --recursive
 
 - Build the library:
 
-Make sure you are in the root folder.
+Make sure you are in the root folder and add your generator if necessary.
 
 ```bash
 rm -rf build;
 mkdir build;
 cd build;
-cmake .. -DCMAKE_BUILD_TYPE=Release;
-cmake --build . --config Release;
-cmake --install . --prefix install --config Release;
-cmake .. -DCMAKE_BUILD_TYPE=Debug;
+cmake .. -G "Visual Studio 17 2022";
 cmake --build . --config Debug;
-cmake --install . --prefix install --config Debug;
+cmake --install . --config Debug --prefix ./install;
+cmake --build . --config Release;
+cmake --install . --config Release --prefix ./install;
 cd ..;
 ```
 
@@ -160,8 +159,12 @@ Before running benchmarks, close unnecessary programs, disable power saving and 
 Then, use thoses commands:
 
 ```bash
-cd ../benchmark;
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../build/install;
+cd benchmark;
+rm -rf build;
+mkdir build;
+cd build;
+cmake .. -G "Visual Studio 17 2022" -B . -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../build/install;
+cd ..;
 cmake --build build --config Release;
 build/Release/ColloLogBench.exe;
 cd ..;
