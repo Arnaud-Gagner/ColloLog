@@ -86,7 +86,7 @@ Make sure you are in the root folder and add your generator if necessary.
 rm -rf build;
 mkdir build;
 cd build;
-cmake .. -G "Visual Studio 17 2022";
+cmake ..;
 cmake --build . --config Debug;
 cmake --install . --config Debug --prefix ./install;
 cmake --build . --config Release;
