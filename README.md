@@ -83,6 +83,7 @@ git submodule update --init --recursive
 Make sure you are in the root folder.
 
 ```bash
+rm -rf build;
 mkdir build;
 cd build;
 cmake .. -DCMAKE_BUILD_TYPE=Release;
@@ -91,6 +92,7 @@ cmake --install . --prefix install --config Release;
 cmake .. -DCMAKE_BUILD_TYPE=Debug;
 cmake --build . --config Debug;
 cmake --install . --prefix install --config Debug;
+cd ..;
 ```
 
 - Link it with your build setup
@@ -158,10 +160,11 @@ Before running benchmarks, close unnecessary programs, disable power saving and 
 Then, use thoses commands:
 
 ```bash
-cd ../benchmark
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../build/install
-cmake --build build --config Release
-build/Release/ColloLogBench.exe
+cd ../benchmark;
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../build/install;
+cmake --build build --config Release;
+build/Release/ColloLogBench.exe;
+cd ..;
 ```
 
 ---
