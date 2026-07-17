@@ -8,6 +8,7 @@ project(
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(CheckIPOSupported)
 
 set(SOURCES
     src/Enums.cpp
@@ -55,29 +56,10 @@ else()
     message(WARNING "IPO (LTO) not supported: ${ipo_error}")
 endif()
 
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-endif()
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${PROJECT_NAME}
         PRIVATE
             $<$<CONFIG:Release>:-O3 -march=native -flto>
-    )
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_options(${PROJECT_NAME}
-        PRIVATE
-            $<$<CONFIG:Release>:/O2 /GL>
-    )
-
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        LINK_FLAGS_RELEASE "/LTCG"
-    )
-endif()
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(${PROJECT_NAME}
-        PRIVATE
             -Wall
             -Wextra
             -Wpedantic
@@ -87,7 +69,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${PROJECT_NAME}
         PRIVATE
+            $<$<CONFIG:Release>:/O2 /GL>
             /W4
+    )
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        LINK_FLAGS_RELEASE "/LTCG"
     )
 endif()
 
@@ -95,12 +82,10 @@ endif()
 
 install(
     TARGETS ${PROJECT_NAME}
-    EXPORT ${PROJECT_NAME}-targets
-
+    EXPORT ${PROJECT_NAME}Targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
@@ -112,11 +97,12 @@ install(
 configure_package_config_file(
     cmake/${PROJECT_NAME}Config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    INSTALL_DESTINATION share/${PROJECT_NAME}
 )
 
 write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
@@ -124,12 +110,12 @@ install(
     FILES
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    DESTINATION share/${PROJECT_NAME}
 )
 
 install(
-    EXPORT ${PROJECT_NAME}-targets
-    FILE ${PROJECT_NAME}-targets.cmake
+    EXPORT ${PROJECT_NAME}Targets
+    FILE ${PROJECT_NAME}Targets.cmake
     NAMESPACE ${PROJECT_NAME}::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    DESTINATION share/${PROJECT_NAME}
 )

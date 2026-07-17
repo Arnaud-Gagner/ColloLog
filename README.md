@@ -86,7 +86,7 @@ Make sure you are in the root folder and add your generator if necessary.
 rm -rf build;
 mkdir build;
 cd build;
-cmake ..;
+cmake .. -G "Visual Studio 17 2022";
 cmake --build . --config Debug;
 cmake --install . --config Debug --prefix ./install;
 cmake --build . --config Release;
@@ -163,7 +163,7 @@ cd benchmark;
 rm -rf build;
 mkdir build;
 cd build;
-cmake .. -G "Visual Studio 17 2022" -B . -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../build/install;
+cmake .. -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH=../build/install;
 cd ..;
 cmake --build build --config Release;
 build/Release/ColloLogBench.exe;
