@@ -30,7 +30,7 @@ namespace
     {
         if (!localogInstance) {
             throw std::runtime_error(
-              "Logger not initialized. Call collolog::init() first.");
+              "Logger not initialized. Call localog::init() first.");
         }
         return *localogInstance;
     }
