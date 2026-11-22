@@ -1,8 +1,6 @@
 #ifndef COLLO_ENUMS_H
 #define COLLO_ENUMS_H
 
-#include <string>
-
 enum LogLevel {
     Debug = 0,
     Info = 1,
