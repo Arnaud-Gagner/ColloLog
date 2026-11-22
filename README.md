@@ -38,13 +38,13 @@ ColloLog is a lightweight, high-performance C++ logging library designed for mul
 
 **Throughput example:** Logs were automatically flushed to disk by the tool and messages were static.
 
-- [1 thread] `collog`: 17'500'000 logs/s 
+- [1 thread] `collog`: 17'500'000 logs/s per thread
 
-- [1 thread] `localog`: 11'000'000 logs/s 
+- [1 thread] `localog`: 11'000'000 logs/s per thread
 
-- [2 threads] `collog` : 16'500'000 logs/s
+- [2 threads] `collog` : 16'500'000 logs/s per thread
 
-- [2+ threads] `localog`: 17'500'000 logs/s
+- [2+ threads] `localog`: 17'500'000 logs/s per thread
 
 > :exclamation: Benchmarks were run on an Intel i7-13620H (13th gen), 32GB RAM.
 
@@ -86,7 +86,7 @@ Make sure you are in the root folder and add your generator if necessary.
 rm -rf build;
 mkdir build;
 cd build;
-cmake .. -G "Visual Studio 17 2022";
+cmake ..;
 cmake --build . --config Debug;
 cmake --install . --config Debug --prefix ./install;
 cmake --build . --config Release;
@@ -163,7 +163,7 @@ cd benchmark;
 rm -rf build;
 mkdir build;
 cd build;
-cmake .. -G "Visual Studio 17 2022" -B . -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../build/install;
+cmake .. -B . -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../build/install;
 cd ..;
 cmake --build build --config Release;
 build/Release/ColloLogBench.exe;
