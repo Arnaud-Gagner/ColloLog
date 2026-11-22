@@ -7,7 +7,7 @@
 #include "ColloLog.h"
 #include "benchmarks.h"
 
-const unsigned int MaxThreads = 2;
+const unsigned int MaxThreads = 10;
 const unsigned int Rounds = 10;
 const char* CsvFile = "D:/Iteration2/ColloLog/result.csv";
 const char* TempLogFile = "Logs/test.log";
