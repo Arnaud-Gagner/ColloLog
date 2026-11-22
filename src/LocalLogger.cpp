@@ -32,7 +32,6 @@ LocalLogger::LocalLogger(const std::string& filepath, FileOpen mode)
 LocalLogger::~LocalLogger()
 {
     swapBuffers();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
     if (mFile.is_open()) {
         mFile.close();
     }
