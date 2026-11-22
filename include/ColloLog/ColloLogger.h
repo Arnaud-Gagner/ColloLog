@@ -59,16 +59,16 @@ private:
     char* mAppendBuffer;
     char* mWriteBuffer;
 
-    unsigned int mAppendIndex;
-    unsigned int mWriteIndex;
+    unsigned int mAppendIndex{};
+    unsigned int mWriteIndex{};
 
-    LogLevel mLevel;
+    LogLevel mLevel{ LogLevel::Debug };
 
     std::mutex mLock;
     std::mutex mFileLock;
     std::mutex mTaskLock;
 
-    std::atomic<bool> mIsThreadRunning;
+    std::atomic<bool> mIsRunning{ false };
 
     std::queue<std::function<void()>> mTasks;
     std::condition_variable mTaskNotifier;

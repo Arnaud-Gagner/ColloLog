@@ -4,7 +4,6 @@
 #include <fstream>
 #include <mutex>
 #include <string>
-#include <vector>
 
 class RingBuffer
 {

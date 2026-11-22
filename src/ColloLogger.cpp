@@ -2,21 +2,15 @@
 
 #include <charconv>
 #include <cstring>
-#include <ctime>
 #include <iostream>
 
 #include "CollogUtils.h"
 
 ColloLogger::ColloLogger(const std::string& filePath, FileOpen mode)
   : mFilePath{ filePath }
-  , mAppendIndex{}
-  , mWriteIndex{}
-  , mLevel{ LogLevel::Debug }
-  , mIsThreadRunning{ true }
 {
     mAppendBuffer = mBuffer1;
     mWriteBuffer = mBuffer2;
-
     switch (mode) {
         case FileOpen::Clear: {
             mFile.open(mFilePath, std::ios::trunc);
@@ -27,21 +21,24 @@ ColloLogger::ColloLogger(const std::string& filePath, FileOpen mode)
             break;
         }
     }
-
+    mIsRunning.store(true);
     mWriteThread = std::thread(&ColloLogger::threadLoop, this);
 }
 
 ColloLogger::~ColloLogger()
 {
-    std::unique_lock<std::mutex> lock(mLock);
-    mIsThreadRunning = false;
+    {
+        std::unique_lock<std::mutex> lock(mTaskLock);
+        mIsRunning.store(false);
+    }
     mTaskNotifier.notify_all();
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    mWriteThread.join();
-    flushNow();
-
+    if (mWriteThread.joinable()) {
+        mWriteThread.join();
+    }
+    {
+        std::unique_lock<std::mutex> lock(mLock);
+        flushNow();
+    }
     if (mFile.is_open()) {
         mFile.close();
     }
@@ -225,6 +222,9 @@ void ColloLogger::write()
 
 void ColloLogger::task(const std::function<void()>& task)
 {
+    if (!mIsRunning.load()) {
+        return;
+    }
     {
         std::unique_lock<std::mutex> lock(mTaskLock);
         mTasks.emplace(task);
@@ -234,16 +234,17 @@ void ColloLogger::task(const std::function<void()>& task)
 
 void ColloLogger::threadLoop()
 {
-    while (mIsThreadRunning) {
+    while (true) {
         std::function<void()> task;
         {
             std::unique_lock<std::mutex> lock(mTaskLock);
             mTaskNotifier.wait(lock,
-                               [this] { return !mTasks.empty() || !mIsThreadRunning; });
-            if (!mTasks.empty()) {
-                task = std::move(mTasks.front());
-                mTasks.pop();
+                               [this] { return !mTasks.empty() || !mIsRunning.load(); });
+            if (mTasks.empty()) {
+                return;
             }
+            task = std::move(mTasks.front());
+            mTasks.pop();
         }
         if (task) {
             task();
