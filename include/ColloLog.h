@@ -23,7 +23,7 @@ namespace localog
 {
     void init(const char* path, FileOpen mode = FileOpen::Append);
 
-    void setlevel(const LogLevel& lvl);
+    void setLevel(const LogLevel& lvl);
 
     void crit(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
     void debug(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);

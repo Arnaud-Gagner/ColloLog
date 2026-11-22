@@ -92,9 +92,9 @@ void localog::init(const char* path, FileOpen mode)
     }
 }
 
-void localog::setlevel(const LogLevel& lvl)
+void localog::setLevel(const LogLevel& lvl)
 {
-    localInstance().setlevel(lvl);
+    localInstance().setLevel(lvl);
 }
 
 void localog::crit(const char* msg, FlushStrat strat)

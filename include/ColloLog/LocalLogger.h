@@ -13,7 +13,7 @@ public:
     LocalLogger(const std::string& filePath, FileOpen mode = FileOpen::Append);
     ~LocalLogger();
 
-    void setlevel(const LogLevel& lvl);
+    void setLevel(const LogLevel& lvl);
 
     void crit(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
     void debug(const char* msg, FlushStrat strat = FlushStrat::AutoAsync);
@@ -22,7 +22,7 @@ public:
 
     void flush();
     void clear();
-    
+
 private:
     void addLog(const size_t& size, const char* msg, const LogLevel& lvl);
     void swapBuffers();

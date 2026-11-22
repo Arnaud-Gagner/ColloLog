@@ -37,7 +37,7 @@ LocalLogger::~LocalLogger()
     }
 }
 
-void LocalLogger::setlevel(const LogLevel& lvl)
+void LocalLogger::setLevel(const LogLevel& lvl)
 {
     mLevel = lvl;
 }
