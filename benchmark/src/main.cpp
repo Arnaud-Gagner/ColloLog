@@ -7,7 +7,7 @@
 #include "ColloLog.h"
 #include "benchmarks.h"
 
-const unsigned int MaxThreads = 10;
+const unsigned int MaxThreads = 2;
 const unsigned int Rounds = 10;
 const char* CsvFile = "D:/Iteration2/ColloLog/result.csv";
 const char* TempLogFile = "Logs/test.log";
@@ -39,12 +39,12 @@ void allRoundsOfThread(const unsigned int nThreads)
     std::ofstream result(CsvFile, std::ios::app);
     double totalLoggingTime = 0.0;
     for (unsigned int i = 0; i < Rounds; ++i) {
-        localog::clear();
+        collog::clear();
         std::cout << "\n\tstarting round " << i;
 
         long long throughputTime = runLongBenchmark(nThreads);
         totalLoggingTime += throughputTime;
-        std::cout << "\n\tmean time per log(ns): "
+        std::cout << "\n\tmean time per log(ns) per thread: "
                   << throughputTime / (nThreads * MessagesPerThread);
     }
     std::cout << "\nAverage throughput across all rounds: " << std::fixed
